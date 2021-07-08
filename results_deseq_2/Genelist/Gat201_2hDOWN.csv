@@ -1,0 +1,1298 @@
+Gat201_2h_down,Gene,Product
+1,CNAG_01980,hypothetical protein
+2,CNAG_01551,hypothetical protein
+3,CNAG_06389,hypothetical protein
+4,CNAG_06242,high-affinity iron permease CaFTR1
+5,CNAG_04874,hypothetical protein
+6,CNAG_05916,hypothetical protein
+7,CNAG_00456,hypothetical protein
+8,CNAG_06785,kynurenine 3-monooxygenase
+9,CNAG_06917,thiol-specific antioxidant protein 3
+10,CNAG_06802,hypothetical protein
+11,CNAG_05835,"hypothetical protein, variant"
+12,CNAG_05835,hypothetical protein
+13,CNAG_00302,hypothetical protein
+14,CNAG_00674,hypothetical protein
+15,CNAG_03516,hypothetical protein
+16,CNAG_03113,trehalose synthase
+17,CNAG_03894,hypothetical protein
+18,CNAG_04877,hypothetical protein
+19,CNAG_05312,hypothetical protein
+20,CNAG_06241,acidic laccase
+21,CNAG_00735,aldehyde dehydrogenase family 7 member A1
+22,CNAG_04126,hypothetical protein
+23,CNAG_05870,hypothetical protein
+24,CNAG_05870,"hypothetical protein, variant"
+25,CNAG_07869,hypothetical protein
+26,CNAG_06200,hypothetical protein
+27,CNAG_06200,"hypothetical protein, variant"
+28,CNAG_05313,"hypothetical protein, variant 4"
+29,CNAG_05313,"hypothetical protein, variant 3"
+30,CNAG_05313,"hypothetical protein, variant 1"
+31,CNAG_05313,"hypothetical protein, variant 2"
+32,CNAG_05313,hypothetical protein
+33,CNAG_05229,stomatin family protein
+34,CNAG_02872,hypothetical protein
+35,CNAG_05632,hypothetical protein
+36,CNAG_02323,hypothetical protein
+37,CNAG_00883,transcription factor
+38,CNAG_04018,hypothetical protein
+39,CNAG_02544,DNA repair protein Swi5/Sae3
+40,CNAG_05263,hypothetical protein
+41,CNAG_05915,hypothetical protein
+42,CNAG_00936,"lipid particle protein, variant"
+43,CNAG_00936,lipid particle protein
+44,CNAG_06762,hypothetical protein
+45,CNAG_00654,sulfiredoxin
+46,CNAG_00597,"amino acid transporter, variant"
+47,CNAG_00597,amino acid transporter
+48,CNAG_01983,cAMP-independent regulatory protein
+49,CNAG_06186,hypothetical protein
+50,CNAG_06186,"hypothetical protein, variant 1"
+51,CNAG_06186,"hypothetical protein, variant 2"
+52,CNAG_02381,hypothetical protein
+53,CNAG_03848,glutathione transferase
+54,CNAG_03848,"glutathione transferase, variant"
+55,CNAG_02060,hypothetical protein
+56,CNAG_06163,hypothetical protein
+57,CNAG_00637,cystathionine beta-synthase
+58,CNAG_07401,hypothetical protein
+59,CNAG_02226,hypothetical protein
+60,CNAG_00374,hypothetical protein
+61,CNAG_00126,2-deoxy-D-gluconate 3-dehydrogenase
+62,CNAG_03143,hypothetical protein
+63,CNAG_02543,hypothetical protein
+64,CNAG_03727,hypothetical protein
+65,CNAG_04625,cerevisin
+66,CNAG_03644,hypothetical protein
+67,CNAG_00581,saccharopepsin
+68,CNAG_05813,hypothetical protein
+69,CNAG_04416,major facilitator superfamily transporter
+70,CNAG_06432,acetate kinase
+71,CNAG_07736,"glucan endo-1,3-alpha-glucosidase agn1"
+72,CNAG_04413,hypothetical protein
+73,CNAG_06657,hypothetical protein
+74,CNAG_06346,hypothetical protein
+75,CNAG_01742,aquaporin-associated protein
+76,CNAG_00107,hypothetical protein
+77,CNAG_07442,phosphatidylglycerol/phosphatidylinositol transfer protein
+78,CNAG_05962,"hypothetical protein, variant 2"
+79,CNAG_05962,"hypothetical protein, variant 1"
+80,CNAG_05962,hypothetical protein
+81,CNAG_05345,amino acid transporter
+82,CNAG_01052,hypothetical protein
+83,CNAG_00407,glyoxal oxidase
+84,CNAG_01777,glyoxylate reductase
+85,CNAG_05994,multidrug transporter
+86,CNAG_00264,nuclease I
+87,CNAG_00264,"nuclease I, variant"
+88,CNAG_03461,"hypothetical protein, variant"
+89,CNAG_03461,hypothetical protein
+90,CNAG_04756,hypothetical protein
+91,CNAG_05731,glyoxal oxidase
+92,CNAG_04735,extracellular elastinolytic metalloproteinase
+93,CNAG_03438,hexose transporter
+94,CNAG_00074,protein PNS1
+95,CNAG_04476,"hypothetical protein, variant"
+96,CNAG_04476,hypothetical protein
+97,CNAG_01690,"MFS transporter, variant 1"
+98,CNAG_01690,"MFS transporter, variant 2"
+99,CNAG_01690,MFS transporter
+100,CNAG_02297,hypothetical protein
+101,CNAG_03058,hypothetical protein
+102,CNAG_06554,FAD dependent oxidoreductase
+103,CNAG_03705,hypothetical protein
+104,CNAG_02225,"glucan 1,3-beta-glucosidase"
+105,CNAG_03654,ATP-dependent DNA helicase
+106,CNAG_04857,hypothetical protein
+107,CNAG_02063,hypothetical protein
+108,CNAG_06336,"glucan 1,3-beta-glucosidase"
+109,CNAG_07339,hypothetical protein
+110,CNAG_00598,nicotinamide mononucleotide permease
+111,CNAG_03268,hypothetical protein
+112,CNAG_03326,chitin synthase
+113,CNAG_05161,"hypothetical protein, variant"
+114,CNAG_05161,hypothetical protein
+115,CNAG_05742,hypothetical protein
+116,CNAG_01722,vacuolar protein sorting-associated protein vps13
+117,CNAG_06658,rhomboid family membrane protein
+118,CNAG_04154,hypothetical protein
+119,CNAG_07626,NAD-binding Rossmann fold oxidoreductase
+120,CNAG_00251,hypothetical protein
+121,CNAG_02118,hypothetical protein
+122,CNAG_02561,spermine transporter
+123,CNAG_04096,racemase
+124,CNAG_05396,LRP16 family protein
+125,CNAG_07807,histone H4
+126,CNAG_01681,cytosine permease
+127,CNAG_02684,hypothetical protein
+128,CNAG_03735,hypothetical protein
+129,CNAG_00128,hypothetical protein
+130,CNAG_05264,"alpha-amylase AmyA, variant"
+131,CNAG_05264,alpha-amylase AmyA
+132,CNAG_04042,hypothetical protein
+133,CNAG_04737,hypothetical protein
+134,CNAG_07695,gamma-aminobutyric acid transporter
+135,CNAG_06590,"hypothetical protein, variant"
+136,CNAG_06590,hypothetical protein
+137,CNAG_00123,hypothetical protein
+138,CNAG_01506,hypothetical protein
+139,CNAG_04969,UDP-glucose 6-dehydrogenase
+140,CNAG_01635,hypothetical protein
+141,CNAG_01043,hypothetical protein
+142,CNAG_06408,sister chromatid cohesion protein DCC1
+143,CNAG_03384,hypothetical protein
+144,CNAG_01689,hypothetical protein
+145,CNAG_01689,"hypothetical protein, variant"
+146,CNAG_01210,hypothetical protein
+147,CNAG_06724,DNA repair and recombination protein RAD52
+148,CNAG_06493,hypothetical protein
+149,CNAG_07784,hypothetical protein
+150,CNAG_01097,short-chain dehydrogenase/reductase SDR
+151,CNAG_07419,hypothetical protein
+152,CNAG_07419,"hypothetical protein, variant"
+153,CNAG_00799,cellulase
+154,CNAG_04869,carboxylesterase
+155,CNAG_02107,hypothetical protein
+156,CNAG_06908,pyridoxal biosynthesis lyase pdxS
+157,CNAG_06285,hypothetical protein
+158,CNAG_04753,gluconolactonase
+159,CNAG_06517,cytoplasmic protein
+160,CNAG_01261,myosin I binding protein
+161,CNAG_04675,hypothetical protein
+162,CNAG_06016,hypothetical protein
+163,CNAG_07775,hypothetical protein
+164,CNAG_05060,hypothetical protein
+165,CNAG_03667,hypothetical protein
+166,CNAG_04736,hypothetical protein
+167,CNAG_00702,hypothetical protein
+168,CNAG_02839,hypothetical protein
+169,CNAG_00688,hypothetical protein
+170,CNAG_03316,rho GDP-dissociation inhibitor
+171,CNAG_03140,sugar transporter
+172,CNAG_05238,"hypothetical protein, variant"
+173,CNAG_05238,hypothetical protein
+174,CNAG_04681,hypothetical protein
+175,CNAG_04681,"hypothetical protein, variant"
+176,CNAG_03171,Wee protein kinase
+177,CNAG_05889,hypothetical protein
+178,CNAG_02264,AFG1-family ATPase
+179,CNAG_02264,"AFG1-family ATPase, variant"
+180,CNAG_05539,hypothetical protein
+181,CNAG_03117,hypothetical protein
+182,CNAG_06294,hypothetical protein
+183,CNAG_05159,"hypothetical protein, variant"
+184,CNAG_05159,hypothetical protein
+185,CNAG_02189,alpha-amylase
+186,CNAG_05147,hypothetical protein
+187,CNAG_03426,GDP-mannose transporter 2
+188,CNAG_05066,hypothetical protein
+189,CNAG_07599,DNA mismatch repair protein PMS2
+190,CNAG_02659,"hypothetical protein, variant"
+191,CNAG_02659,hypothetical protein
+192,CNAG_02865,"hypothetical protein, variant"
+193,CNAG_02865,hypothetical protein
+194,CNAG_04970,hypothetical protein
+195,CNAG_04970,"hypothetical protein, variant 2"
+196,CNAG_04970,"hypothetical protein, variant 1"
+197,CNAG_04600,DNA topoisomerase III
+198,CNAG_03637,ATP-dependent DNA helicase 2 subunit 2
+199,CNAG_04891,hypothetical protein
+200,CNAG_01283,hypothetical protein
+201,CNAG_01981,sulfide:quinone oxidoreductase
+202,CNAG_02822,hypothetical protein
+203,CNAG_06099,hypothetical protein
+204,CNAG_00165,methylthioadenosine phosphorylase
+205,CNAG_07512,hypothetical protein
+206,CNAG_06017,hypothetical protein
+207,CNAG_03044,hypothetical protein
+208,CNAG_03044,"hypothetical protein, variant"
+209,CNAG_01612,"CAMK/CAMKL protein kinase, variant"
+210,CNAG_02407,phospholipase D
+211,CNAG_06267,hypothetical protein
+212,CNAG_01982,hypothetical protein
+213,CNAG_06758,efflux protein
+214,CNAG_03906,hypothetical protein
+215,CNAG_01242,hypothetical protein
+216,CNAG_01847,hypothetical protein
+217,CNAG_04888,hypothetical protein
+218,CNAG_01335,hypothetical protein
+219,CNAG_03154,"hypothetical protein, variant"
+220,CNAG_03154,hypothetical protein
+221,CNAG_06727,hypothetical protein
+222,CNAG_06727,"hypothetical protein, variant 2"
+223,CNAG_06727,"hypothetical protein, variant 1"
+224,CNAG_04436,hypothetical protein
+225,CNAG_06372,hypothetical protein
+226,CNAG_02675,CAMK/CAMKL/GIN4 protein kinase
+227,CNAG_01285,Aur protein kinase
+228,CNAG_04787,membrane protein
+229,CNAG_03161,hypothetical protein
+230,CNAG_05636,hypothetical protein
+231,CNAG_02071,hypothetical protein
+232,CNAG_05425,asparagine synthase (glutamine-hydrolyzing)
+233,CNAG_02125,"hypothetical protein, variant"
+234,CNAG_02125,hypothetical protein
+235,CNAG_01919,hypothetical protein
+236,CNAG_05812,"potassium:hydrogen antiporter, variant"
+237,CNAG_05812,potassium:hydrogen antiporter
+238,CNAG_02516,"hypothetical protein, variant 1"
+239,CNAG_02516,hypothetical protein
+240,CNAG_02516,"hypothetical protein, variant 2"
+241,CNAG_05277,vesicle-associated membrane protein 4
+242,CNAG_05277,"vesicle-associated membrane protein 4, variant"
+243,CNAG_05158,"hypothetical protein, variant"
+244,CNAG_05158,hypothetical protein
+245,CNAG_05843,translation initiation factor 4E
+246,CNAG_06453,benzodiazapine receptor
+247,CNAG_01165,D-erythro-sphingosine kinase
+248,CNAG_04742,DNA primase large subunit
+249,CNAG_03805,calcium/proton exchanger
+250,CNAG_00794,hypothetical protein
+251,CNAG_03078,type I phosphodiesterase/nucleotide pyrophosphatase
+252,CNAG_05988,hypothetical protein
+253,CNAG_07770,ferric-chelate reductase
+254,CNAG_00291,hypothetical protein
+255,CNAG_07943,hypothetical protein
+256,CNAG_06311,"cytoplasmic protein, variant"
+257,CNAG_01686,hypothetical protein
+258,CNAG_07476,hypothetical protein
+259,CNAG_03937,hypothetical protein
+260,CNAG_06409,hypothetical protein
+261,CNAG_01865,hypothetical protein
+262,CNAG_00697,UDP-glucose 4-epimerase
+263,CNAG_05654,hypothetical protein
+264,CNAG_04546,multidrug transporter
+265,CNAG_07647,voltage-gated chloride channel protein
+266,CNAG_01084,ubiquitin-conjugating enzyme 4
+267,CNAG_03719,hypothetical protein
+268,CNAG_01318,sodium/hydrogen exchanger 3
+269,CNAG_04039,"iron sulfur cluster assembly protein 2, mitochondrial"
+270,CNAG_02662,cysteine protease ATG4
+271,CNAG_03847,hypothetical protein
+272,CNAG_04201,hypothetical protein
+273,CNAG_02044,hypothetical protein
+274,CNAG_05177,DNA polymerase kappa subunit
+275,CNAG_05908,hypothetical protein
+276,CNAG_05572,hypothetical protein
+277,CNAG_05572,"hypothetical protein, variant"
+278,CNAG_04386,hypothetical protein
+279,CNAG_02666,hypothetical protein
+280,CNAG_06718,hypothetical protein
+281,CNAG_00539,membrane transporter
+282,CNAG_05872,endopeptidase
+283,CNAG_04186,hypothetical protein
+284,CNAG_00919,carboxypeptidase D
+285,CNAG_03223,hypothetical protein
+286,CNAG_02577,oxidoreductase
+287,CNAG_04981,catalase
+288,CNAG_05803,"exo-beta-1,3-glucanase"
+289,CNAG_02678,hypothetical protein
+290,CNAG_02882,hypothetical protein
+291,CNAG_01081,hypothetical protein
+292,CNAG_02828,hypothetical protein
+293,CNAG_04695,hypothetical protein
+294,CNAG_05351,phosphomannomutase
+295,CNAG_02053,hypothetical protein
+296,CNAG_01369,hypothetical protein
+297,CNAG_01796,"hypothetical protein, variant 3"
+298,CNAG_01796,"hypothetical protein, variant 2"
+299,CNAG_01796,"hypothetical protein, variant 1"
+300,CNAG_01796,hypothetical protein
+301,CNAG_06712,hypothetical protein
+302,CNAG_06892,preconditioning-inducible protein
+303,CNAG_03561,hypothetical protein
+304,CNAG_01772,hypothetical protein
+305,CNAG_06832,"glucosidase, variant 2"
+306,CNAG_06832,"glucosidase, variant 1"
+307,CNAG_06832,glucosidase
+308,CNAG_04623,hypothetical protein
+309,CNAG_00130,CAMK/CAMK1/CAMK1-RCK protein kinase
+310,CNAG_07851,"isocitrate dehydrogenase, NAD-dependent"
+311,CNAG_05963,hypothetical protein
+312,CNAG_06509,hypothetical protein
+313,CNAG_00332,hypothetical protein
+314,CNAG_00691,hypothetical protein
+315,CNAG_07573,DNA ligase 4
+316,CNAG_07573,"DNA ligase 4, variant"
+317,CNAG_02179,hemolysin
+318,CNAG_02000,short-chain dehydrogenase
+319,CNAG_03463,hypothetical protein
+320,CNAG_01137,"aconitate hydratase, mitochondrial"
+321,CNAG_06923,phosphoketolase
+322,CNAG_02667,hypothetical protein
+323,CNAG_02168,glucoamylase
+324,CNAG_06310,CAMK/CAMKL protein kinase
+325,CNAG_06310,"CAMK/CAMKL protein kinase, variant 1"
+326,CNAG_06310,"CAMK/CAMKL protein kinase, variant 2"
+327,CNAG_05080,calcofluor white hypersensitive protein
+328,CNAG_00879,glutamate dehydrogenase
+329,CNAG_03829,L-carnitine dehydratase/bile acid-inducible protein F
+330,CNAG_03841,hypothetical protein
+331,CNAG_07824,hypothetical protein
+332,CNAG_03987,elongation factor 1 alpha-like protein
+333,CNAG_00261,hypothetical protein
+334,CNAG_01803,hypothetical protein
+335,CNAG_03308,hypothetical protein
+336,CNAG_03873,"hypothetical protein, variant"
+337,CNAG_03873,hypothetical protein
+338,CNAG_02455,choline transporter
+339,CNAG_03899,hypoxia up-regulated 1
+340,CNAG_06800,hypothetical protein
+341,CNAG_00465,hypothetical protein
+342,CNAG_06459,vacuolar membrane protein
+343,CNAG_02385,DNA primase small subunit
+344,CNAG_04434,hypothetical protein
+345,CNAG_06606,rho family protein
+346,CNAG_03566,hypothetical protein
+347,CNAG_03775,"hypothetical protein, variant 2"
+348,CNAG_03775,"hypothetical protein, variant 1"
+349,CNAG_03775,hypothetical protein
+350,CNAG_02121,hypothetical protein
+351,CNAG_00898,multidrug efflux pump
+352,CNAG_04244,hypothetical protein
+353,CNAG_04611,ubiquitin-conjugating enzyme E2 H
+354,CNAG_04514,CMGC/MAPK protein kinase
+355,CNAG_07330,hypothetical protein
+356,CNAG_06309,hypothetical protein
+357,CNAG_07937,O-acetyltransferase
+358,CNAG_05817,GDP-mannose transporter 1
+359,CNAG_01793,hypothetical protein
+360,CNAG_01793,"hypothetical protein, variant"
+361,CNAG_04398,specific RNA polymerase II transcription factor
+362,CNAG_01093,hypothetical protein
+363,CNAG_02182,D-lactaldehyde dehydrogenase
+364,CNAG_04938,hypothetical protein
+365,CNAG_04938,"hypothetical protein, variant"
+366,CNAG_01616,hypothetical protein
+367,CNAG_00921,glutathione transferase
+368,CNAG_02600,tartrate transporter
+369,CNAG_03382,hypothetical protein
+370,CNAG_03669,hypothetical protein
+371,CNAG_04963,"hypothetical protein, variant"
+372,CNAG_04963,hypothetical protein
+373,CNAG_03365,"hypothetical protein, variant"
+374,CNAG_03365,hypothetical protein
+375,CNAG_04457,hypothetical protein
+376,CNAG_03145,hypothetical protein
+377,CNAG_01422,endoplasmic reticulum protein
+378,CNAG_04886,hypothetical protein
+379,CNAG_07470,high-affinity phosphodiesterase
+380,CNAG_04230,hydroxyethylthiazole kinase
+381,CNAG_02771,DNA repair and recombination protein RAD54B
+382,CNAG_03874,oxidoreductase
+383,CNAG_00299,DNA repair protein RAD5
+384,CNAG_00408,serine/threonine-protein phosphatase PP-X isozyme 1
+385,CNAG_05508,hypothetical protein
+386,CNAG_07812,hypothetical protein
+387,CNAG_00647,hypothetical protein
+388,CNAG_01441,hypothetical protein
+389,CNAG_01441,"hypothetical protein, variant"
+390,CNAG_04200,C2 domain-containing protein
+391,CNAG_06664,sorting nexin MVP1
+392,CNAG_00746,hypothetical protein
+393,CNAG_01960,efflux protein EncT
+394,CNAG_01920,polyubiquitin
+395,CNAG_01255,hypothetical protein
+396,CNAG_06452,"integral membrane protein, variant"
+397,CNAG_06452,integral membrane protein
+398,CNAG_00600,capsular associated protein
+399,CNAG_07817,centromeric protein E
+400,CNAG_02821,hypothetical protein
+401,CNAG_07972,hypothetical protein
+402,CNAG_03002,hypothetical protein
+403,CNAG_02040,hypothetical protein
+404,CNAG_07486,hypothetical protein
+405,CNAG_00873,hypothetical protein
+406,CNAG_04210,"MFS transporter, SP family, general alpha glucoside:H symporter"
+407,CNAG_02221,"solute carrier family 39 (zinc transporter), member 9"
+408,CNAG_03413,alginate lyase
+409,CNAG_04741,endosome protein
+410,CNAG_07482,SCF-associated factor 1
+411,CNAG_01446,hypothetical protein
+412,CNAG_05350,hypothetical protein
+413,CNAG_05350,"hypothetical protein, variant"
+414,CNAG_07506,transcriptional repressor NF-X1
+415,CNAG_02983,hypothetical protein
+416,CNAG_04067,"haloacid dehalogenase, type II"
+417,CNAG_05686,hypothetical protein
+418,CNAG_07325,hypothetical protein
+419,CNAG_07691,hypothetical protein
+420,CNAG_01278,phospholipid-translocating ATPase
+421,CNAG_01278,"phospholipid-translocating ATPase, variant"
+422,CNAG_01080,glycolate oxidase
+423,CNAG_05024,L-xylulose reductase
+424,CNAG_04283,integral membrane protein
+425,CNAG_04283,"integral membrane protein, variant"
+426,CNAG_06424,claudin family protein
+427,CNAG_04750,hypothetical protein
+428,CNAG_04456,hypothetical protein
+429,CNAG_04853,derlin-2/3
+430,CNAG_04167,hypothetical protein
+431,CNAG_04640,ATP-citrate synthase subunit 1
+432,CNAG_01386,"phosphatidylinositol glycan, class P"
+433,CNAG_02475,flavin-containing monooxygenase
+434,CNAG_01874,glutathione S-transferase
+435,CNAG_07441,hypothetical protein
+436,CNAG_00192,hypothetical protein
+437,CNAG_02719,hypothetical protein
+438,CNAG_07993,hypothetical protein
+439,CNAG_06414,"cytochrome c oxidase-assembly factor COX23, mitochondrial"
+440,CNAG_06021,rab GTPase activator
+441,CNAG_03543,hypothetical protein
+442,CNAG_03543,"hypothetical protein, variant"
+443,CNAG_00275,hypothetical protein
+444,CNAG_01526,cleavage and polyadenylation specificity factor subunit 4
+445,CNAG_01975,helicase
+446,CNAG_04755,STE/STE11/BCK1 protein kinase
+447,CNAG_03998,transcriptional activator
+448,CNAG_06629,hypothetical protein
+449,CNAG_00683,CMGC/CLK protein kinase
+450,CNAG_04781,hypothetical protein
+451,CNAG_04781,"hypothetical protein, variant 1"
+452,CNAG_04781,"hypothetical protein, variant 2"
+453,CNAG_01734,pre-mRNA-splicing factor ATP-dependent RNA helicase DHX16
+454,CNAG_06896,cytoplasmic protein
+455,CNAG_06122,glycerol-1-phosphatase
+456,CNAG_04353,"hypothetical protein, variant"
+457,CNAG_04353,hypothetical protein
+458,CNAG_05281,hypothetical protein
+459,CNAG_05281,"hypothetical protein, variant"
+460,CNAG_04991,hypothetical protein
+461,CNAG_04277,hypothetical protein
+462,CNAG_07436,hypothetical protein
+463,CNAG_03995,hypothetical protein
+464,CNAG_06455,hypothetical protein
+465,CNAG_00663,hypothetical protein
+466,CNAG_04771,rab family protein
+467,CNAG_04064,hypothetical protein
+468,CNAG_06901,UDP-N-acetylglucosamine-dolichyl-phosphate N-acetylglucosaminephosphotransferase
+469,CNAG_02510,"hypothetical protein, variant 1"
+470,CNAG_02510,"hypothetical protein, variant 2"
+471,CNAG_02510,hypothetical protein
+472,CNAG_05442,TATA-box-binding protein
+473,CNAG_05592,"potassium/sodium efflux P-type ATPase, fungal-type"
+474,CNAG_00137,hypothetical protein
+475,CNAG_00466,adaptin ear-binding coat-associated protein 2
+476,CNAG_02292,copper chaperone
+477,CNAG_02568,UBA/TS-N domain-containing protein
+478,CNAG_03184,BUB protein kinase
+479,CNAG_00475,WSC domain-containing protein
+480,CNAG_07554,capsular associated protein
+481,CNAG_06098,glucosamine-6-phosphate deaminase
+482,CNAG_00521,hypothetical protein
+483,CNAG_03867,hypothetical protein
+484,CNAG_00960,ATP-dependent RNA helicase DHX8/PRP22
+485,CNAG_03865,cytoplasmic protein
+486,CNAG_03345,"hypothetical protein, variant"
+487,CNAG_03345,hypothetical protein
+488,CNAG_00675,"carnitine/acyl carnitine carrier, variant"
+489,CNAG_00675,carnitine/acyl carnitine carrier
+490,CNAG_06760,hypothetical protein
+491,CNAG_05190,hypothetical protein
+492,CNAG_03542,arginase
+493,CNAG_06427,hypothetical protein
+494,CNAG_02797,hypothetical protein
+495,CNAG_04280,hypothetical protein
+496,CNAG_02843,hypothetical protein
+497,CNAG_03016,"chaperone regulator, variant"
+498,CNAG_03016,chaperone regulator
+499,CNAG_00262,hypothetical protein
+500,CNAG_00262,"hypothetical protein, variant"
+501,CNAG_06096,tricarboxylate carrier
+502,CNAG_06573,hypothetical protein
+503,CNAG_01561,WD-repeat protein
+504,CNAG_06665,hypothetical protein
+505,CNAG_02009,extensin
+506,CNAG_00331,anon-23da protein
+507,CNAG_05887,pre-mRNA-splicing factor 18
+508,CNAG_04269,leucyl aminopeptidase
+509,CNAG_07634,hypothetical protein
+510,CNAG_01263,vacuolar transporter chaperone 4
+511,CNAG_05515,hypothetical protein
+512,CNAG_04069,U4/U6 small nuclear ribonucleoprotein PRP31
+513,CNAG_01183,hypothetical protein
+514,CNAG_01984,transaldolase
+515,CNAG_03911,hydrolase
+516,CNAG_06868,phosphopyruvate hydratase
+517,CNAG_01813,mannose-1-phosphate guanyltransferase
+518,CNAG_02078,hydrolase
+519,CNAG_05131,hypothetical protein
+520,CNAG_04634,hypothetical protein
+521,CNAG_03545,"hypothetical protein, variant 2"
+522,CNAG_03545,"hypothetical protein, variant 1"
+523,CNAG_03545,hypothetical protein
+524,CNAG_01573,hypothetical protein
+525,CNAG_01573,"hypothetical protein, variant"
+526,CNAG_05411,endoglucanase
+527,CNAG_00648,esterase/lipase
+528,CNAG_05768,hypothetical protein
+529,CNAG_02048,proline dehydrogenase
+530,CNAG_05638,hypothetical protein
+531,CNAG_00989,ubiquitin carboxyl-terminal hydrolase L5
+532,CNAG_04519,D-serine dehydratase
+533,CNAG_07692,nucleoside phosphatase
+534,CNAG_06033,pfkB family carbohydrate kinase superfamily
+535,CNAG_02962,CMGC/DYRK/PRP4 protein kinase
+536,CNAG_07483,DNA polymerase zeta subunit
+537,CNAG_03883,"hypothetical protein, variant"
+538,CNAG_03883,hypothetical protein
+539,CNAG_04169,holo-[acyl-carrier protein] synthase
+540,CNAG_02307,L-serine ammonia-lyase
+541,CNAG_07597,hypothetical protein
+542,CNAG_07597,"hypothetical protein, variant"
+543,CNAG_05216,CAMK protein kinase
+544,CNAG_02137,hypothetical protein
+545,CNAG_05408,hypothetical protein
+546,CNAG_00398,hypothetical protein
+547,CNAG_06240,protein disulfide-isomerase
+548,CNAG_05348,cell division control protein 42
+549,CNAG_04949,hypothetical protein
+550,CNAG_03957,4-nitrophenyl phosphatase
+551,CNAG_01709,translation initiation factor 5
+552,CNAG_02894,hypothetical protein
+553,CNAG_01234,spore wall assembly-associated protein
+554,CNAG_01412,phosphatidate phosphatase LPIN
+555,CNAG_02661,hypothetical protein
+556,CNAG_02214,ubiquitin-conjugating enzyme E2 J1
+557,CNAG_02876,ornithine decarboxylase
+558,CNAG_01704,serine/threonine protein kinase
+559,CNAG_05412,hypothetical protein
+560,CNAG_05558,CAMK/CAMKL/Kin4 protein kinase
+561,CNAG_00085,histone chaperone ASF1
+562,CNAG_01385,hypothetical protein
+563,CNAG_01090,alpha/beta hydrolase fold protein
+564,CNAG_04801,hypothetical protein
+565,CNAG_01475,sphingolipid C9-methyltransferase
+566,CNAG_03686,UDP-N-acetylglucosamine transferase subunit ALG14
+567,CNAG_02883,rho family protein
+568,CNAG_07531,"pyridoxal 5'-phosphate synthase, glutaminase subunit Pdx2"
+569,CNAG_02026,hypothetical protein
+570,CNAG_01270,hypothetical protein
+571,CNAG_06728,kinesin
+572,CNAG_02593,hypothetical protein
+573,CNAG_03176,endoplasmic oxidoreductin 1
+574,CNAG_07794,hypothetical protein
+575,CNAG_07766,DNA polymerase lambda subunit
+576,CNAG_03763,IQ domain-containing GTPase activating protein
+577,CNAG_03324,hypothetical protein
+578,CNAG_06732,hypothetical protein
+579,CNAG_04268,exodeoxyribonuclease III
+580,CNAG_00156,hypothetical protein
+581,CNAG_00156,"hypothetical protein, variant"
+582,CNAG_05469,E3 ubiquitin-protein ligase synoviolin
+583,CNAG_04032,AFG3 family protein
+584,CNAG_00780,"hypothetical protein, variant"
+585,CNAG_00780,hypothetical protein
+586,CNAG_05255,hypothetical protein
+587,CNAG_06120,cardiolipin synthase
+588,CNAG_03919,"acetate non-utilizing protein 9, mitochondrial"
+589,CNAG_05696,ubiquitin-conjugating enzyme E2-16 kDa
+590,CNAG_05574,"phosphatidylinositol glycan, class C"
+591,CNAG_01938,CAMK/CAMKL/Kin1 protein kinase
+592,CNAG_02795,phosphoribosylglycinamide formyltransferase
+593,CNAG_06327,"DNA-binding protein creA, variant"
+594,CNAG_06327,DNA-binding protein creA
+595,CNAG_05663,cell wall integrity protein scw1
+596,CNAG_02859,"NADH kinase, variant 1"
+597,CNAG_02859,"NADH kinase, variant 3"
+598,CNAG_02859,"NADH kinase, variant 2"
+599,CNAG_02859,NADH kinase
+600,CNAG_05459,Pi-transporter A-1
+601,CNAG_05181,white collar 1 protein
+602,CNAG_01212,hypothetical protein
+603,CNAG_01508,hypothetical protein
+604,CNAG_01347,co-chaperone
+605,CNAG_04233,hypothetical protein
+606,CNAG_06443,glucose-regulated protein
+607,CNAG_03918,hypothetical protein
+608,CNAG_02210,ribonuclease Z
+609,CNAG_05725,"ketol-acid reductoisomerase, mitochondrial"
+610,CNAG_06638,malate dehydrogenase (oxaloacetate-decarboxylating)
+611,CNAG_04017,methionine-R-sulfoxide reductase
+612,CNAG_02853,amidophosphoribosyltransferase
+613,CNAG_03598,ubiquilin
+614,CNAG_05482,hypothetical protein
+615,CNAG_00769,STE/STE7 protein kinase
+616,CNAG_01215,hypothetical protein
+617,CNAG_06967,phytase
+618,CNAG_02325,mitochondrial protein
+619,CNAG_02404,nuclear segregation protein Bfr1
+620,CNAG_06708,dCMP deaminase
+621,CNAG_06343,"hypothetical protein, variant"
+622,CNAG_06343,hypothetical protein
+623,CNAG_05068,GTP-binding protein ypt1
+624,CNAG_01574,hypothetical protein
+625,CNAG_01284,ATPase
+626,CNAG_03152,calcium-binding protein
+627,CNAG_05888,hypothetical protein
+628,CNAG_06382,beta-transducin repeat containing protein
+629,CNAG_04752,hypothetical protein
+630,CNAG_06909,ABC transporter family protein
+631,CNAG_02817,GTP-binding protein ypt2
+632,CNAG_05783,transcription initiation factor TFIIB
+633,CNAG_06301,AGC/Akt protein kinase
+634,CNAG_03012,hypothetical protein
+635,CNAG_06834,dolichyl-phosphate-mannose-protein mannosyltransferase
+636,CNAG_03807,"E3 ubiquitin-protein ligase CCNP1IP1, variant"
+637,CNAG_03807,E3 ubiquitin-protein ligase CCNP1IP1
+638,CNAG_05452,hypothetical protein
+639,CNAG_07639,triacylglycerol lipase
+640,CNAG_02460,coproporphyrinogen III oxidase
+641,CNAG_04054,translation initiation factor SUI1
+642,CNAG_03813,replication factor A3
+643,CNAG_07964,hypothetical protein
+644,CNAG_07964,hypothetical protein
+645,CNAG_05441,lipid particle protein
+646,CNAG_01419,hypothetical protein
+647,CNAG_01778,hypothetical protein
+648,CNAG_06544,non-histone chromosomal protein 6
+649,CNAG_00858,hypothetical protein
+650,CNAG_07718,multidomain RhoGEF
+651,CNAG_00359,hypothetical protein
+652,CNAG_06079,proliferating cell nuclear antigen (pcna)
+653,CNAG_05165,hypothetical protein
+654,CNAG_02254,quinate permease
+655,CNAG_05254,"solute carrier family 35 (UDP-galactose transporter), member B1"
+656,CNAG_02870,folylpolyglutamate synthase
+657,CNAG_07974,hypothetical protein
+658,CNAG_07773,hypothetical protein
+659,CNAG_02435,white collar 2 protein
+660,CNAG_06792,hypothetical protein
+661,CNAG_04474,monocarboxylic acid transporter
+662,CNAG_05192,hypothetical protein
+663,CNAG_04403,CCCH zinc finger protein
+664,CNAG_07570,prenylated SNARE protein Ykt6p
+665,CNAG_04871,hypothetical protein
+666,CNAG_07669,sorting nexin-3
+667,CNAG_07029,vesicle-associated membrane protein 7
+668,CNAG_07864,U3 small nucleolar ribonucleoprotein IMP3
+669,CNAG_01357,hypothetical protein
+670,CNAG_03052,PP2Cc protein phosphatase
+671,CNAG_02682,hypothetical protein
+672,CNAG_01178,nuclear envelope-endoplasmic reticulum network protein
+673,CNAG_00090,hypothetical protein
+674,CNAG_00090,"hypothetical protein, variant"
+675,CNAG_03558,hypothetical protein
+676,CNAG_06092,cyclin
+677,CNAG_04328,ubiquitin-conjugating enzyme E2 I
+678,CNAG_03315,GTP-binding protein rhoA
+679,CNAG_03023,hypothetical protein
+680,CNAG_06114,rab family protein
+681,CNAG_06441,isoleucine-tRNA ligase
+682,CNAG_06428,ubiquitin thioesterase OTU1
+683,CNAG_06348,ABC transporter PMR5
+684,CNAG_04653,hypothetical protein
+685,CNAG_02236,protein phosphatase
+686,CNAG_06526,"hypothetical protein, variant"
+687,CNAG_06526,hypothetical protein
+688,CNAG_01169,aspartyl aminopeptidase
+689,CNAG_07438,3-keto sterol reductase
+690,CNAG_02918,acetyl-CoA C-acetyltransferase
+691,CNAG_02663,ribonucleoside-diphosphate reductase subunit M2
+692,CNAG_03596,2-oxoglutarate dehydrogenase E2 component (dihydrolipoamide succinyltransferase)
+693,CNAG_06681,hypothetical protein
+694,CNAG_00692,FAD dependent oxidoreductase
+695,CNAG_02823,bloom syndrome protein
+696,CNAG_02123,methionyl-tRNA formyltransferase
+697,CNAG_01266,ATP-dependent protease La
+698,CNAG_04179,lysine-tRNA ligase
+699,CNAG_03959,hypothetical protein
+700,CNAG_00565,dynamin GTPase
+701,CNAG_03863,protein arginine N-methyltransferase 1
+702,CNAG_03863,"protein arginine N-methyltransferase 1, variant"
+703,CNAG_07848,hypothetical protein
+704,CNAG_00604,hypothetical protein
+705,CNAG_07498,hypothetical protein
+706,CNAG_01004,hypothetical protein
+707,CNAG_01004,"hypothetical protein, variant 1"
+708,CNAG_01004,"hypothetical protein, variant 2"
+709,CNAG_06030,hypothetical protein
+710,CNAG_05734,hypothetical protein
+711,CNAG_05734,"hypothetical protein, variant"
+712,CNAG_02213,epsin
+713,CNAG_06473,hypothetical protein
+714,CNAG_05886,ubiquitin-conjugating enzyme E2
+715,CNAG_07333,ubiquitin carboxyl-terminal hydrolase 25/28
+716,CNAG_02827,ubiquitin-like protein Nedd8
+717,CNAG_04478,hypothetical protein
+718,CNAG_01752,"solute carrier family 25 (mitochondrial 2-oxodicarboxylate transporter), member 21"
+719,CNAG_05650,"ubiquitin carboxyl-terminal hydrolase 7, variant"
+720,CNAG_05650,ubiquitin carboxyl-terminal hydrolase 7
+721,CNAG_05845,protein FAM32A
+722,CNAG_02134,hypothetical protein
+723,CNAG_05437,nascent polypeptide-associated complex subunit beta
+724,CNAG_00464,pre-mRNA-splicing factor RSE1
+725,CNAG_01852,CCR4-NOT transcription complex subunit 2
+726,CNAG_07740,hypothetical protein
+727,CNAG_01549,splicing factor 3A subunit 3
+728,CNAG_06753,nuclear cap-binding protein subunit 1
+729,CNAG_00434,arginine N-methyltransferase 2
+730,CNAG_04620,hypothetical protein
+731,CNAG_04236,pyridoxal phosphate phosphatase phospho2
+732,CNAG_03497,BET3 family protein
+733,CNAG_02772,hypothetical protein
+734,CNAG_03621,peptidyl-prolyl cis-trans isomerase
+735,CNAG_03621,"peptidyl-prolyl cis-trans isomerase, variant"
+736,CNAG_00533,mitochondrial import inner membrane translocase subunit TIM50
+737,CNAG_05631,"NADH-ubiquinone oxidoreductase 49 kDa subunit, mitochondrial"
+738,CNAG_02688,hypothetical protein
+739,CNAG_04683,hypothetical protein
+740,CNAG_03072,enolase
+741,CNAG_06474,RNA-binding protein Musashi
+742,CNAG_02020,SWR1-complex protein 4
+743,CNAG_05804,nuclear pore complex protein Nup188
+744,CNAG_01092,hypothetical protein
+745,CNAG_03726,hypothetical protein
+746,CNAG_03726,"hypothetical protein, variant"
+747,CNAG_00740,hypothetical protein
+748,CNAG_02898,RNA-binding protein 8A
+749,CNAG_07866,"transcription initiation factor TFIIA small subunit, variant 1"
+750,CNAG_07866,"transcription initiation factor TFIIA small subunit, variant 2"
+751,CNAG_07866,transcription initiation factor TFIIA small subunit
+752,CNAG_03170,hypothetical protein
+753,CNAG_04149,nuclear pore complex protein Nup107
+754,CNAG_05247,lysophosphatidate acyltransferase
+755,CNAG_02547,nuclear pore complex protein Nup205
+756,CNAG_05881,"alpha-1,2-mannosyltransferase"
+757,CNAG_00401,"phosphatidylinositol glycan, class U"
+758,CNAG_03451,hypothetical protein
+759,CNAG_02280,hypothetical protein
+760,CNAG_01235,"DNA-directed RNA polymerase II subunit RPB2, variant"
+761,CNAG_01235,DNA-directed RNA polymerase II subunit RPB2
+762,CNAG_06498,hypothetical protein
+763,CNAG_06224,nuclear movement protein nudC
+764,CNAG_05139,"solute carrier family 35 (UDP-sugar transporter), member A1/2/3, variant"
+765,CNAG_05139,"solute carrier family 35 (UDP-sugar transporter), member A1/2/3"
+766,CNAG_00495,hypothetical protein
+767,CNAG_05294,F-box and WD-40 domain-containing protein CDC4
+768,CNAG_01725,hypothetical protein
+769,CNAG_01725,"hypothetical protein, variant"
+770,CNAG_03124,periodic tryptophan protein 2
+771,CNAG_03367,uridine kinase
+772,CNAG_01957,20S proteasome subunit beta 7
+773,CNAG_04990,glutamate-5-semialdehyde dehydrogenase
+774,CNAG_05111,hypothetical protein
+775,CNAG_03441,small subunit ribosomal protein S21
+776,CNAG_04110,glutathione S-transferase
+777,CNAG_04276,cytosine-purine permease
+778,CNAG_01339,cytoplasmic protein
+779,CNAG_02745,hypothetical protein
+780,CNAG_04797,signal recognition particle subunit SRP19
+781,CNAG_04705,"hypothetical protein, variant"
+782,CNAG_04705,hypothetical protein
+783,CNAG_05200,pyridoxal kinase
+784,CNAG_05013,RNP domain-containing protein
+785,CNAG_02136,small subunit ribosomal protein S6
+786,CNAG_05604,hypothetical protein
+787,CNAG_05353,nuclear pore complex protein Nup133
+788,CNAG_02149,hypothetical protein
+789,CNAG_07499,chitin synthase
+790,CNAG_03930,hypothetical protein
+791,CNAG_03646,phosphoribosylformimino-5-aminoimidazole carboxamide ribotide isomerase
+792,CNAG_02803,hypothetical protein
+793,CNAG_04697,zinc finger protein
+794,CNAG_02534,tRNA 2'-phosphotransferase
+795,CNAG_03884,hypothetical protein
+796,CNAG_02891,endoplasmic reticulum protein
+797,CNAG_00594,lipid particle protein
+798,CNAG_05880,hypothetical protein
+799,CNAG_03106,hypothetical protein
+800,CNAG_02786,dihydropteroate synthase
+801,CNAG_00462,electron-transferring-flavoprotein dehydrogenase
+802,CNAG_06864,"hypothetical protein, variant"
+803,CNAG_06864,hypothetical protein
+804,CNAG_04221,"6-phosphofructo-2-kinase/fructose-2, 6-bisphosphatase"
+805,CNAG_05117,hypothetical protein
+806,CNAG_00158,glycosyltransferase
+807,CNAG_06174,PEK/GCN2 protein kinase
+808,CNAG_01241,enzyme regulator
+809,CNAG_04056,hypothetical protein
+810,CNAG_05297,hypothetical protein
+811,CNAG_05928,"hypothetical protein, variant"
+812,CNAG_05928,hypothetical protein
+813,CNAG_02032,nuclear export factor
+814,CNAG_02117,NAD-binding Rossmann fold oxidoreductase
+815,CNAG_04740,hypothetical protein
+816,CNAG_01303,hypothetical protein
+817,CNAG_01303,"hypothetical protein, variant"
+818,CNAG_02394,hypothetical protein
+819,CNAG_01059,"vacuolar membrane protein, variant"
+820,CNAG_01059,vacuolar membrane protein
+821,CNAG_03467,hypothetical protein
+822,CNAG_06192,hypothetical protein
+823,CNAG_06425,fungal specific transcription factor
+824,CNAG_07009,"hypothetical protein, variant 2"
+825,CNAG_07009,"hypothetical protein, variant 1"
+826,CNAG_07009,hypothetical protein
+827,CNAG_07009,"hypothetical protein, variant 3"
+828,CNAG_05242,hypothetical protein
+829,CNAG_06326,"solute carrier family 40 (iron-regulated transporter), member 1"
+830,CNAG_06519,autophagy protein 5
+831,CNAG_06713,cysteine-tRNA ligase
+832,CNAG_07801,aldo-keto reductase
+833,CNAG_01290,hypothetical protein
+834,CNAG_08022,"CMGC/CDK/CDK5 protein kinase, variant"
+835,CNAG_08022,CMGC/CDK/CDK5 protein kinase
+836,CNAG_04646,hypothetical protein
+837,CNAG_05173,DNA-3-methyladenine glycosylase II
+838,CNAG_00681,condensin complex subunit 3
+839,CNAG_00681,"condensin complex subunit 3, variant"
+840,CNAG_01317,hypothetical protein
+841,CNAG_04925,nuclear protein
+842,CNAG_06532,hypothetical protein
+843,CNAG_00991,flap endonuclease 1
+844,CNAG_06906,translation initiation factor 4B
+845,CNAG_05844,mitochondrial import inner membrane translocase subunit TIM8
+846,CNAG_01599,hypothetical protein
+847,CNAG_02886,20S proteasome subunit beta 4
+848,CNAG_00159,hypothetical protein
+849,CNAG_07818,hypothetical protein
+850,CNAG_06563,translation initiation factor 3 subunit F
+851,CNAG_04120,RNA polymerase II subunit A domain phosphatase
+852,CNAG_00538,hypothetical protein
+853,CNAG_04001,20S proteasome subunit alpha 1
+854,CNAG_06325,GTPase activator
+855,CNAG_07426,proteasome maturation protein
+856,CNAG_01764,cytoplasmic protein
+857,CNAG_03003,chromatin structure-remodeling complex subunit SFH1
+858,CNAG_03509,pyruvate dehydrogenase X component
+859,CNAG_03582,pH-response regulator protein palA/RIM20
+860,CNAG_04438,hypothetical protein
+861,CNAG_03248,rho GTPase activator
+862,CNAG_00284,"efflux protein EncT, variant"
+863,CNAG_00284,efflux protein EncT
+864,CNAG_04488,3-ketoacyl-CoA reductase
+865,CNAG_02181,dihydrokaempferol 4-reductase
+866,CNAG_00527,translation initiation factor eIF-2B subunit epsilon
+867,CNAG_01928,xaa-Pro aminopeptidase
+868,CNAG_07552,DNA repair protein Rad8
+869,CNAG_07637,large subunit ribosomal protein L3
+870,CNAG_04676,6-phosphofructokinase
+871,CNAG_06678,enzyme activator
+872,CNAG_04003,pumilio 2
+873,CNAG_07902,AAT family amino acid transporter
+874,CNAG_05008,hypothetical protein
+875,CNAG_05076,hypothetical protein
+876,CNAG_05113,aldehyde dehydrogenase (NAD)
+877,CNAG_01974,large subunit ribosomal protein L36
+878,CNAG_01625,hypothetical protein
+879,CNAG_05311,"arsenite-resistant protein ASR2, variant"
+880,CNAG_05311,arsenite-resistant protein ASR2
+881,CNAG_00109,"large subunit ribosomal protein L34, variant"
+882,CNAG_00109,large subunit ribosomal protein L34
+883,CNAG_05413,"phosphatidylinositol glycan, class Q, variant"
+884,CNAG_05413,"phosphatidylinositol glycan, class Q"
+885,CNAG_07453,hypothetical protein
+886,CNAG_03575,alpha-L-rhamnosidase
+887,CNAG_03335,ribose-phosphate pyrophosphokinase
+888,CNAG_07405,hypothetical protein
+889,CNAG_07405,"hypothetical protein, variant"
+890,CNAG_03242,"solute carrier family 25 (peroxisomal adenine nucleotide transporter), member 17"
+891,CNAG_04530,DNA-binding protein
+892,CNAG_01962,"ubiquinone biosynthesis protein COQ4, mitochondrial"
+893,CNAG_06986,sugar transporter
+894,CNAG_05476,hypothetical protein
+895,CNAG_07887,hypothetical protein
+896,CNAG_05364,"hypothetical protein, variant"
+897,CNAG_05364,hypothetical protein
+898,CNAG_00748,hypothetical protein
+899,CNAG_00877,adenylate kinase
+900,CNAG_00877,"adenylate kinase, variant"
+901,CNAG_02446,response regulator receiver protein
+902,CNAG_00730,ATP-binding cassette transporter
+903,CNAG_00756,hypothetical protein
+904,CNAG_07571,hypothetical protein
+905,CNAG_04983,hypothetical protein
+906,CNAG_07420,hypothetical protein
+907,CNAG_04394,hypothetical protein
+908,CNAG_07977,hypothetical protein
+909,CNAG_03876,Ras family protein
+910,CNAG_03876,Ras family protein
+911,CNAG_03876,Ras family protein
+912,CNAG_03876,Ras family protein
+913,CNAG_03876,Ras family protein
+914,CNAG_01331,hypothetical protein
+915,CNAG_07518,ribonuclease P/MRP protein subunit POP5
+916,CNAG_01721,porphobilinogen deaminase
+917,CNAG_04961,orotidine 5'-phosphate decarboxylase
+918,CNAG_06056,hypothetical protein
+919,CNAG_06667,hypothetical protein
+920,CNAG_05536,hypothetical protein
+921,CNAG_05240,signal recognition particle subunit SRP68
+922,CNAG_02840,hypothetical protein
+923,CNAG_02840,"hypothetical protein, variant"
+924,CNAG_07549,hypothetical protein
+925,CNAG_01547,WD-repeat protein
+926,CNAG_02109,"type I inositol-1,4,5-trisphosphate 5-phosphatase 1"
+927,CNAG_06680,COP9 signalosome complex subunit 6
+928,CNAG_02361,"MFS transporter, ACS family, pantothenate transporter"
+929,CNAG_00178,DNA repair protein REV1
+930,CNAG_00026,kynurenine aminotransferase
+931,CNAG_00026,"kynurenine aminotransferase, variant"
+932,CNAG_01862,hexose transporter
+933,CNAG_02062,glycoside hydrolase family 2
+934,CNAG_01286,hypothetical protein
+935,CNAG_01286,"hypothetical protein, variant"
+936,CNAG_07457,hypothetical protein
+937,CNAG_00804,Gtr1/RagA G protein Gtr1
+938,CNAG_00442,cyclin
+939,CNAG_04253,transmembrane protein
+940,CNAG_06028,hypothetical protein
+941,CNAG_00353,3-oxo-5-alpha-steroid 4-dehydrogenase 1
+942,CNAG_05300,mitochondrial carrier protein
+943,CNAG_05929,"MFS transporter, SP family, general alpha glucoside:H symporter"
+944,CNAG_04399,YggS family pyridoxal phosphate enzyme
+945,CNAG_03186,THO complex subunit 4
+946,CNAG_00542,salicylate hydroxylase
+947,CNAG_07356,"succinate dehydrogenase, cytochrome b556 subunit"
+948,CNAG_03130,rho family protein
+949,CNAG_05414,hypothetical protein
+950,CNAG_02007,adenylate kinase 1
+951,CNAG_03115,hypothetical protein
+952,CNAG_06914,tubulin gamma chain
+953,CNAG_05375,hypothetical protein
+954,CNAG_02866,pantothenate kinase
+955,CNAG_04038,MFS quinate transporter QutD
+956,CNAG_06328,hypothetical protein
+957,CNAG_04815,cytokinesis protein
+958,CNAG_03850,transcriptional activator SPT7
+959,CNAG_07724,ligand-regulated transcription factor
+960,CNAG_04466,hypothetical protein
+961,CNAG_03139,phosphatidylethanolamine N-methyltransferase
+962,CNAG_03522,hypothetical protein
+963,CNAG_03391,mitochondrial inner membrane protein
+964,CNAG_00108,RuvB-like helicase 1
+965,CNAG_00032,"2,4-dihydroxyhept-2-ene-1,7-dioic acid aldolase"
+966,CNAG_03383,hypothetical protein
+967,CNAG_01969,zinc metalloprotease
+968,CNAG_02350,hypothetical protein
+969,CNAG_00758,regulatory protein ral2
+970,CNAG_03559,allantoate permease
+971,CNAG_03988,"solute carrier family 38 (sodium-coupled neutral amino acid transporter), member 11"
+972,CNAG_02319,hypothetical protein
+973,CNAG_00532,hypothetical protein
+974,CNAG_00528,WD-repeat protein 23
+975,CNAG_00018,hypothetical protein
+976,CNAG_02143,hypothetical protein
+977,CNAG_02143,"hypothetical protein, variant"
+978,CNAG_04747,hypothetical protein
+979,CNAG_03664,high-affinity nickel-transporter
+980,CNAG_04615,L-aminoadipate-semialdehyde dehydrogenase
+981,CNAG_05811,hypothetical protein
+982,CNAG_07897,"MFS transporter, SP family, general alpha glucoside:H symporter"
+983,CNAG_06875,allantoate permease
+984,CNAG_01392,hypothetical protein
+985,CNAG_00855,ligase
+986,CNAG_02397,hypothetical protein
+987,CNAG_01890,5-methyltetrahydropteroyltriglutamate- homocysteine S-methyltransferase
+988,CNAG_05270,tRNA pseudouridine13 synthase
+989,CNAG_04512,hypothetical protein
+990,CNAG_04495,hypothetical protein
+991,CNAG_01546,S-adenosylmethionine-dependent methyltransferase
+992,CNAG_00308,gly-X carboxypeptidase
+993,CNAG_02284,"2-oxoisovalerate dehydrogenase E1 component, alpha subunit"
+994,CNAG_01543,AP-3 complex subunit beta
+995,CNAG_00836,2-hydroxyacid dehydrogenase
+996,CNAG_01044,dihydroceramidase
+997,CNAG_00451,cytoplasmic protein
+998,CNAG_07437,3-keto sterol reductase
+999,CNAG_01844,tetracycline efflux protein
+1000,CNAG_02046,poly(A)-binding protein binding protein
+1001,CNAG_05138,"glucan 1,3-beta-glucosidase"
+1002,CNAG_03916,glucose-6-phosphate isomerase
+1003,CNAG_06781,hypothetical protein
+1004,CNAG_05015,catalase
+1005,CNAG_05106,hypothetical protein
+1006,CNAG_00371,methylglutaconyl-CoA hydratase
+1007,CNAG_06846,hypothetical protein
+1008,CNAG_05550,hypothetical protein
+1009,CNAG_02683,hypothetical protein
+1010,CNAG_02947,SCYL protein kinase
+1011,CNAG_03960,Gly-Xaa carboxypeptidase
+1012,CNAG_02452,hypothetical protein
+1013,CNAG_01609,cystathionine gamma-synthase
+1014,CNAG_05018,"hypothetical protein, variant"
+1015,CNAG_05018,hypothetical protein
+1016,CNAG_00181,macrophage erythroblast attacher isoform 1
+1017,CNAG_04188,O-methyltransferase
+1018,CNAG_06527,"MFS transporter, SP family, general alpha glucoside:H symporter, variant 1"
+1019,CNAG_06527,"MFS transporter, SP family, general alpha glucoside:H symporter"
+1020,CNAG_06527,"MFS transporter, SP family, general alpha glucoside:H symporter, variant 2"
+1021,CNAG_04574,"dolichyl-phosphate mannosyltransferase polypeptide 2, regulatory subunit"
+1022,CNAG_00909,phosphopantothenoylcysteine decarboxylase
+1023,CNAG_00070,hypothetical protein
+1024,CNAG_04937,peroxin-12
+1025,CNAG_04005,cytoplasmic protein
+1026,CNAG_04005,"cytoplasmic protein, variant"
+1027,CNAG_06215,hypothetical protein
+1028,CNAG_04579,"alpha-1,2-mannosyltransferase"
+1029,CNAG_00135,cyclophilin
+1030,CNAG_03358,phosphoglycerate kinase
+1031,CNAG_00777,CCR4-NOT transcriptional complex subunit CAF120
+1032,CNAG_01557,calmodulin
+1033,CNAG_03104,hypothetical protein
+1034,CNAG_06152,hypothetical protein
+1035,CNAG_07488,hypothetical protein
+1036,CNAG_03693,large subunit ribosomal protein L11
+1037,CNAG_01471,hypothetical protein
+1038,CNAG_06003,hypothetical protein
+1039,CNAG_01229,L-mandelate dehydrogenase
+1040,CNAG_04907,hypothetical protein
+1041,CNAG_04907,"hypothetical protein, variant"
+1042,CNAG_00194,hypothetical protein
+1043,CNAG_06745,histone H3
+1044,CNAG_05822,protein RAI1
+1045,CNAG_01552,blocked early in transport 1
+1046,CNAG_07612,hypothetical protein
+1047,CNAG_01964,OPT family small oligopeptide transporter
+1048,CNAG_03129,transcription factor iiia
+1049,CNAG_01002,hypothetical protein
+1050,CNAG_00905,MFS transporter
+1051,CNAG_02903,alcohol dehydrogenase (NADP)
+1052,CNAG_01180,hypothetical protein
+1053,CNAG_05741,hypothetical protein
+1054,CNAG_05741,"hypothetical protein, variant"
+1055,CNAG_01611,hypothetical protein
+1056,CNAG_00450,3-isopropylmalate dehydrogenase
+1057,CNAG_04534,"hypothetical protein, variant"
+1058,CNAG_04534,hypothetical protein
+1059,CNAG_04621,glycogen(starch) synthase
+1060,CNAG_04621,"glycogen(starch) synthase, variant"
+1061,CNAG_02939,peroxin-3
+1062,CNAG_02327,xaa-Pro dipeptidase
+1063,CNAG_06355,hypothetical protein
+1064,CNAG_00773,hypothetical protein
+1065,CNAG_03961,hypothetical protein
+1066,CNAG_05736,hypothetical protein
+1067,CNAG_00443,hypothetical protein
+1068,CNAG_04498,"alpha-1,2-mannosidase"
+1069,CNAG_04271,hypothetical protein
+1070,CNAG_06505,hypothetical protein
+1071,CNAG_02748,UTP-glucose-1-phosphate uridylyltransferase
+1072,CNAG_06494,cold-induced thioredoxin domain-containing protein
+1073,CNAG_05444,NADPH dehydrogenase
+1074,CNAG_07561,"6-phosphogluconate dehydrogenase, decarboxylating 1"
+1075,CNAG_03677,hypothetical protein
+1076,CNAG_07510,farnesyl-diphosphate farnesyltransferase
+1077,CNAG_00055,hypothetical protein
+1078,CNAG_03026,N-acetylglucosaminylphosphatidylinositol deacetylase
+1079,CNAG_06529,hypothetical protein
+1080,CNAG_02601,hypothetical protein
+1081,CNAG_06385,"GAF domain-containing protein, variant"
+1082,CNAG_06385,GAF domain-containing protein
+1083,CNAG_02968,hypothetical protein
+1084,CNAG_06589,endoribonuclease L-PSP
+1085,CNAG_03436,"alanine transaminase, variant"
+1086,CNAG_03436,alanine transaminase
+1087,CNAG_04994,signal recognition particle subunit SRP14
+1088,CNAG_03842,hypothetical protein
+1089,CNAG_04818,hypothetical protein
+1090,CNAG_06932,sugar transporter
+1091,CNAG_04677,xylitol dehydrogenase
+1092,CNAG_06137,hypothetical protein
+1093,CNAG_03048,gluconokinase
+1094,CNAG_07881,"hypothetical protein, variant 2"
+1095,CNAG_07881,"hypothetical protein, variant 1"
+1096,CNAG_07881,hypothetical protein
+1097,CNAG_05431,pH-response transcription factor pacC/RIM101
+1098,CNAG_03859,"transcriptional regulator Medusa, variant"
+1099,CNAG_03859,transcriptional regulator Medusa
+1100,CNAG_01598,template-activating factor I
+1101,CNAG_00454,hypothetical protein
+1102,CNAG_01365,hypothetical protein
+1103,CNAG_00745,HAL protein kinase
+1104,CNAG_06330,hypothetical protein
+1105,CNAG_07873,MIPC synthase
+1106,CNAG_02757,hypothetical protein
+1107,CNAG_07960,hypothetical protein
+1108,CNAG_06448,cystathionine gamma-lyase
+1109,CNAG_00452,isovaleryl-CoA dehydrogenase
+1110,CNAG_06942,nicotinamide mononucleotide permease
+1111,CNAG_01086,hypothetical protein
+1112,CNAG_03909,hypothetical protein
+1113,CNAG_06055,hypothetical protein
+1114,CNAG_03004,"riboflavin synthase, alpha subunit"
+1115,CNAG_07989,hypothetical protein
+1116,CNAG_07989,hypothetical protein
+1117,CNAG_04174,peroxin-6
+1118,CNAG_05369,beta-glucosidase
+1119,CNAG_05369,"beta-glucosidase, variant 2"
+1120,CNAG_05369,"beta-glucosidase, variant 1"
+1121,CNAG_06692,glucosamine-phosphate N-acetyltransferase
+1122,CNAG_00077,"solute carrier family 26 (sodium-independent sulfate anion transporter), member 11"
+1123,CNAG_01550,pre-rRNA-processing protein TSR3
+1124,CNAG_05102,DNA repair protein Rad5
+1125,CNAG_00393,"1,4-alpha-glucan-branching enzyme"
+1126,CNAG_07630,U3 small nucleolar ribonucleoprotein IMP4
+1127,CNAG_07341,hypothetical protein
+1128,CNAG_07741,cytoplasmic protein
+1129,CNAG_01584,hydrolase
+1130,CNAG_06035,alcohol dehydrogenase
+1131,CNAG_01065,"hypothetical protein, variant"
+1132,CNAG_01065,hypothetical protein
+1133,CNAG_00837,hypothetical protein
+1134,CNAG_02552,"transketolase, variant 2"
+1135,CNAG_02552,"transketolase, variant 1"
+1136,CNAG_02552,transketolase
+1137,CNAG_08008,hypothetical protein
+1138,CNAG_00840,hypothetical protein
+1139,CNAG_06545,pim1 protein RNA transporter 2
+1140,CNAG_02533,hypothetical protein
+1141,CNAG_04614,hypothetical protein
+1142,CNAG_02096,peroxin-16
+1143,CNAG_00161,auxin-induced protein
+1144,CNAG_07516,hypothetical protein
+1145,CNAG_06690,hypothetical protein
+1146,CNAG_01534,hypothetical protein
+1147,CNAG_07961,hypothetical protein
+1148,CNAG_03696,hypothetical protein
+1149,CNAG_08026,hypothetical protein
+1150,CNAG_06601,amidohydrolase
+1151,CNAG_02035,triose-phosphate isomerase
+1152,CNAG_04219,lactoylglutathione lyase
+1153,CNAG_04219,"lactoylglutathione lyase, variant"
+1154,CNAG_03046,hypothetical protein
+1155,CNAG_05449,hypothetical protein
+1156,CNAG_01580,hypothetical protein
+1157,CNAG_07449,amino acid transporter
+1158,CNAG_01576,hypothetical protein
+1159,CNAG_03806,acyltransferase
+1160,CNAG_03806,"acyltransferase, variant"
+1161,CNAG_06574,antiphagocytic protein 1
+1162,CNAG_02975,hypothetical protein
+1163,CNAG_07390,hypothetical protein
+1164,CNAG_00096,hypothetical protein
+1165,CNAG_04975,hypothetical protein
+1166,CNAG_04635,endopeptidase
+1167,CNAG_07780,"geranylgeranyl diphosphate synthase, type III"
+1168,CNAG_06870,hypothetical protein
+1169,CNAG_04009,aminopeptidase 2
+1170,CNAG_05999,peptide alpha-N-acetyltransferase
+1171,CNAG_06583,hypothetical protein
+1172,CNAG_06561,allantoate transporter
+1173,CNAG_07671,hypothetical protein
+1174,CNAG_01758,polygalacturonase
+1175,CNAG_07701,hypothetical protein
+1176,CNAG_03247,"sterol 3beta-glucosyltransferase, variant"
+1177,CNAG_03247,sterol 3beta-glucosyltransferase
+1178,CNAG_03134,3-hydroxybutyryl-CoA dehydrogenase
+1179,CNAG_05591,hypothetical protein
+1180,CNAG_05591,"hypothetical protein, variant"
+1181,CNAG_07830,hypothetical protein
+1182,CNAG_07830,"hypothetical protein, variant"
+1183,CNAG_05890,guanine nucleotide-binding protein subunit gamma
+1184,CNAG_04178,hypothetical protein
+1185,CNAG_07334,ferric-chelate reductase
+1186,CNAG_04927,hypothetical protein
+1187,CNAG_07690,hypothetical protein
+1188,CNAG_04461,ATP-dependent DNA helicase HFM1/MER3
+1189,CNAG_03280,dihydrodipicolinate synthetase
+1190,CNAG_03280,"dihydrodipicolinate synthetase, variant"
+1191,CNAG_03168,sulfite reductase (NADPH) flavoprotein alpha-component
+1192,CNAG_02764,"ATP-binding cassette, subfamily D (ALD), peroxisomal long-chain fatty acid import protein"
+1193,CNAG_05828,UDP-N-acetylglucosamine pyrophosphorylase
+1194,CNAG_04960,hypothetical protein
+1195,CNAG_00867,"MFS transporter, SP family, solute carrier family 2 (myo-inositol transporter), member 13"
+1196,CNAG_00867,"MFS transporter, SP family, solute carrier family 2 (myo-inositol transporter), member 13, variant 1"
+1197,CNAG_00867,"MFS transporter, SP family, solute carrier family 2 (myo-inositol transporter), member 13, variant 2"
+1198,CNAG_03420,Gly-Xaa carboxypeptidase
+1199,CNAG_05644,2-nitropropane dioxygenase
+1200,CNAG_01926,peroxisome targeting signal receptor
+1201,CNAG_05324,sugar transporter
+1202,CNAG_01627,amino oxidase
+1203,CNAG_03243,2-nitropropane dioxygenase
+1204,CNAG_06567,hypothetical protein
+1205,CNAG_04518,hypothetical protein
+1206,CNAG_03295,hypothetical protein
+1207,CNAG_05290,transcription initiation protein SPT3
+1208,CNAG_04618,hypothetical protein
+1209,CNAG_04618,"hypothetical protein, variant"
+1210,CNAG_05042,carnitine acetyltransferase
+1211,CNAG_06484,hypothetical protein
+1212,CNAG_05785,hypothetical protein
+1213,CNAG_06949,hypothetical protein
+1214,CNAG_06578,hypothetical protein
+1215,CNAG_05721,multifunctional beta-oxidation protein
+1216,CNAG_03836,"hypothetical protein, variant"
+1217,CNAG_03836,hypothetical protein
+1218,CNAG_05031,3-oxoacid CoA-transferase
+1219,CNAG_00689,"beta-1,4-mannosyltransferase"
+1220,CNAG_06816,hypothetical protein
+1221,CNAG_06905,cytoplasmic protein
+1222,CNAG_06815,hypothetical protein
+1223,CNAG_00865,maltose O-acetyltransferase
+1224,CNAG_03133,"UDP-glucose,sterol transferase"
+1225,CNAG_03394,hypothetical protein
+1226,CNAG_01554,sorting nexin-4
+1227,CNAG_03085,hypothetical protein
+1228,CNAG_02102,hypothetical protein
+1229,CNAG_05678,membrane protein
+1230,CNAG_00005,TPR repeat-containing protein
+1231,CNAG_07417,hypothetical protein
+1232,CNAG_02052,dimeric dihydrodiol dehydrogenase
+1233,CNAG_00797,acetyl-CoA synthetase
+1234,CNAG_01595,hypothetical protein
+1235,CNAG_02553,short-chain dehydrogenase
+1236,CNAG_05090,quinone oxidoreductase
+1237,CNAG_07403,peroxin-1
+1238,CNAG_04704,"MFS transporter, SHS family, lactate transporter"
+1239,CNAG_03393,acyl-CoA thioesterase II
+1240,CNAG_03623,malonic semialdehyde reductase
+1241,CNAG_05169,L-lactate dehydrogenase (cytochrome)
+1242,CNAG_02814,glycerol-3-phosphate dehydrogenase
+1243,CNAG_06568,RAN protein kinase
+1244,CNAG_00012,hypothetical protein
+1245,CNAG_07802,class III aminotransferase
+1246,CNAG_01384,hypothetical protein
+1247,CNAG_04978,phytanoyl-CoA dioxygenase
+1248,CNAG_06963,sugar transporter
+1249,CNAG_01252,thiosulfate/3-mercaptopyruvate sulfurtransferase
+1250,CNAG_00490,acetyl-CoA acyltransferase
+1251,CNAG_05639,hypothetical protein
+1252,CNAG_00537,carnitine O-acetyltransferase
+1253,CNAG_07685,UMF1 family MFS transporter
+1254,CNAG_04631,ribitol kinase
+1255,CNAG_01621,hypothetical protein
+1256,CNAG_01112,xenobiotic reductase
+1257,CNAG_01841,hypothetical protein
+1258,CNAG_01565,biotin-[acetyl-CoA-carboxylase] ligase
+1259,CNAG_04455,peroxisomal membrane protein 4
+1260,CNAG_06659,hexosaminidase
+1261,CNAG_06485,hexose transporter protein
+1262,CNAG_07976,hypothetical protein
+1263,CNAG_04531,enoyl-CoA hydratase
+1264,CNAG_00094,NAD-dependent epimerase/dehydratase
+1265,CNAG_07944,urea carboxylase
+1266,CNAG_03729,"peroxin-5, variant"
+1267,CNAG_03729,peroxin-5
+1268,CNAG_02295,phosphotransferase enzyme family protein
+1269,CNAG_07631,hypothetical protein
+1270,CNAG_04392,sterol-binding protein
+1271,CNAG_00315,HHE domain-containing protein
+1272,CNAG_06924,beta-fructofuranosidase
+1273,CNAG_06628,aldehyde dehydrogenase (NAD)
+1274,CNAG_03136,hypothetical protein
+1275,CNAG_06511,hypothetical protein
+1276,CNAG_04346,dihydrodipicolinate synthase
+1277,CNAG_06666,starch phosphorylase
+1278,CNAG_00791,hypothetical protein
+1279,CNAG_01605,rossman fold oxidoreductase
+1280,CNAG_03194,saccharopine dehydrogenase
+1281,CNAG_03194,"saccharopine dehydrogenase, variant"
+1282,CNAG_05057,"hypothetical protein, variant"
+1283,CNAG_05057,hypothetical protein
+1284,CNAG_06512,pirin
+1285,CNAG_04836,nuclear protein
+1286,CNAG_04098,"ATP-binding cassette, subfamily G (WHITE), member 2, PDR"
+1287,CNAG_01995,hypothetical protein
+1288,CNAG_06556,oxidoreductase
+1289,CNAG_01164,glutamine-fructose-6-phosphate transaminase (isomerizing)
+1290,CNAG_00400,secondary thiamine-phosphate synthase enzyme
+1291,CNAG_00400,"secondary thiamine-phosphate synthase enzyme, variant"
+1292,CNAG_04101,hypothetical protein
+1293,CNAG_04501,anthranilate synthase/indole-3-glycerol phosphate synthase/phosphoribosylanthranilate isomerase
+1294,CNAG_06557,membrane protein
+1295,CNAG_05990,hypothetical protein
+1296,CNAG_06515,hypothetical protein
+1297,CNAG_02765,3-hydroxyisobutyrate dehydrogenase

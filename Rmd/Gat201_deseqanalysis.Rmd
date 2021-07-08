@@ -1,0 +1,834 @@
+---
+title: "Gat201 RNA Seq Deseqanalysis 2021-04-29"
+author: "Liz Hughes"
+date: "29/04/2021"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+  word_document:
+    toc: yes
+    toc_depth: '2'
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE , warning=FALSE, message=FALSE)
+```
+
+# GAT201 RNA Seq analysis_EHughes
+
+To carry out RNA-Seq I will use the Lexogen Quant Seq 3' mRNA-Seq library prep kit FWD. This is designed to generate illumina compatible libraries of sequences close to the 3' end of polyA RNA.
+
+Work flow: Reverse transcription ⇒ Removal of RNA ⇒ Second strand synthesis ⇒ Library amplification ⇒ Sequencing
+
+4 strains: KN99a, KN99 alpha, Gat201 deletion from the Madhani deletion collection (003) and Gat201 disruption from the Bahn collection (004).
+
+2 conditions: RPMI and RPMI+Serum (10%).
+
+2 BioReps for each strain.
+
+A single colony was grown in YPD, 30 degrees, 200rpm for 5 days.
+
+3.5 ml was transferred to 100ml fresh RPMI or RPMI+10% Serum and incubated at 37 degrees, 60rpm.
+
+2ml samples were taken from each rep at time 0hrs, fix and freeze and put at -80 degrees.
+
+At 30 mins, 2hrs and 4hrs 15 ml samples were collected, fix and freeze and put at -80 degrees.
+
+# Install Packages required, not need to do everytime but keeping code here for future
+{r Install_DESeq2, eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("biobroom")
+BiocManager::install("DESeq2")
+
+
+
+# Load packages used for analysis
+```{r Load packages used for analysis, include=FALSE}
+
+library(tidyr)
+library(readr)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(ggplot2)
+library(cowplot)
+library(biobroom)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(magrittr)
+library(markdown)
+library(forcats)
+
+
+theme_set(
+  theme_cowplot(font_size = 12) +
+    theme(panel.grid.major = element_line(colour = "grey80", size = 0.5))
+)
+
+```
+
+
+# Define colours for specific samples
+
+A_Y_0 = "Navy"
+A_R_30 = "lightblue"
+A_R_120 = "blue"
+A_R_240 = "darkblue"
+A_RS_30 = "lightgreen"
+A_RS_120 = "green"
+A_RS_240 = "darkgreen"
+a_Y_0 = "Red"
+a_R_30 = "darkred"
+a_R_120 = "magenta"
+a_R_240 = "darkmagenta"
+a_RS_30 = "lightgreen"
+a_RS_120 = "pink"
+a_RS_240 = "darkgreen"
+B_Y_0 = "Blue"
+B_R_30 = "Red"
+B_R_120 = "darkred"
+B_R_240 = "darkmagenta"
+B_RS_30 = "lightgreen"
+B_RS_120 = "green"
+B_RS_240 = "darkgreen"
+M_Y_0 = "Orange"
+M_R_30 = "Red"
+M_R_120 = "darkred"
+M_R_24 = "darkmagenta"
+M_RS_30 = "lightgreen"
+M_RS_120 = "green"
+M_RS_240 = "darkgreen"
+
+
+
+# Load count data and remove unwanted parts of column names
+
+```{r Load count data}
+counts <- readr::read_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/quantseqfwd_EH_050221/counts.txt",
+                   comment = "#") %>% 
+          dplyr::rename_with(str_remove_all, pattern = "_S[0-9]+_R1_001_aln.bam")
+
+```
+# Load sample sheet and format for DESeq2's requirements: readxl::read_excel
+
+Connect sample names to informative data that generated the data.
+
+Extra steps to format for DESeq2. 
+
+Remove all samples not sequenced: 'dplyr::filter'
+
+Remove notes in column: 'dplyr::select'
+
+Set rownames to make format of table appropriate for DESeq: 'magrittr::set_rownames'
+
+```{r Load sample sheet}
+samplesheet <- readxl::read_excel("~/Documents/GitHub/CryptoGat201RNASeq_draft/input_experiment/Gat201_samplesheet.xlsx") %>%
+    magrittr::set_rownames(.$SampleID)%>%
+    dplyr::mutate(GAT201 = forcats::fct_collapse(Strain, Yes = c("a","A"), No = c("B","M")))
+```
+We now have all the ingredients to prepare our data object in a form that is suitable for analysis, namely:
+
+counts: a table with the read counts
+samplesheet: a table with information about the samples
+
+
+# Select counts
+
+Select from counts table only counts with 'x'
+
+Set rownames to make format of table appropriate for DESeq: 'magrittr::set_rownames'
+
+```{r Select counts_all}
+counts_all <-
+  dplyr::select(counts, samplesheet$SampleID) %>%
+   magrittr::set_rownames(counts$Geneid)
+```
+# Construct the data object from the matrix of counts and the samplesheet information table
+
+```{r dds_all for counts_all}
+(dds_all <- DESeqDataSetFromMatrix(countData = counts_all,
+                                 colData = samplesheet,
+                                 design = ~ Condition + Strain + Time))
+```
+
+# rlog Transformation
+DESeq2 offers the regularized-logarithm transformation, or rlog for short. For genes with high counts, the rlog transformation differs not much from an ordinary log2 transformation. For genes with lower counts, however, the values are shrunken towards the genes’ averages across all samples. Using an empirical Bayesian prior on inter-sample differences in the form of a ridge penalty, this is done such that the rlog-transformed data are approximately homoskedastic.
+
+```{r rlog Transformation on dds_all (counts_all)}
+rld_all <- rlog(dds_all)
+           head(assay(rld_all))
+```
+
+To show the effect of the transformation, we plot the first sample against the second, first simply using the log2 function (after adding 1, to avoid taking the log of zero), and then using the rlog-transformed values. For the log2 method, we need estimate size factors to account for sequencing depth (this is done automatically for the rlog method).
+Note that, in order to make it easier to see where several points are plotted on top of each other, we set the plotting color to a semi-transparent black and changed the points to solid circles (pch=16) with reduced size (cex=0.3).
+
+```{r Log2 verus rlog}
+par( mfrow = c( 1, 2 ) )
+dds <- estimateSizeFactors(dds_all)
+plot(log2( 1 + counts(dds, normalized=TRUE)[ , 1:2] ),
+     pch=16, cex=0.3)
+plot(assay(rld_all)[ , 1:2],
+     pch=16, cex=0.3)
+```
+
+We can see how genes with low counts seem to be excessively variable on the ordinary logarithmic scale, while the rlog transform compresses differences for genes for which the data cannot provide good information anyway.
+
+# Sample distances
+
+A useful first step in an RNA-Seq analysis is often to assess overall similarity between samples: Which samples are similar to each other, which are different? Does this fit to the expectation from the experiment’s design?
+
+We use the R function dist to calculate the Euclidean distance between samples. To avoid that the distance measure is dominated by a few highly variable genes, and have a roughly equal contribution from all genes, we use it on the rlog-transformed data.
+
+Note the use of the function t to transpose the data matrix. We need this because dist calculates distances between data rows and our samples constitute the columns.
+
+```{r Sample distances for rld_all}
+sampleDists_all <- dist( t( assay(rld_all) ) )
+
+```
+
+# Heatmap
+We visualize the distances in a heatmap, using the function pheatmap from the pheatmap package.
+In order to plot the sample distance matrix with the rows/columns arranged by those distances in the matrix, we manually provide the sampleDists to the clustering_distance argument of the pheatmap function. Otherwise the pheatmap function would assume that the matrix contains the data values themselves, and would calculate distances between the rows/columns of the distance matrix, which is not desired.
+
+```{r Heatmap for rld_all}
+sampleDistMatrix <- as.matrix(sampleDists_all)
+rownames(sampleDistMatrix) <- paste( rld_all$Strain, rld_all$Condition, rld_all$Time, rld_all$GAT201, sep="-" )
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists_all,
+         clustering_distance_cols=sampleDists_all,
+         col=colors, cex = 0.7,
+         main = "Heatmap of SampleDists_all", 
+         filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/Heatmap of SampleDists_all.jpg")
+
+```
+
+Note that we have changed the row names of the distance matrix to contain treatment type and patient number instead of sample ID, so that we have all this information in view when looking at the heatmap.
+
+## Prepare similar Heatmaps for each timepoint.
+
+## Heatmap 0hrs
+
+```{r heatmap-0hrs}
+samplesheet_0h <-  dplyr::filter(samplesheet, Time == "0")
+                  print(samplesheet_0h)
+
+counts_0h <-  dplyr::select(counts_all, samplesheet_0h$SampleID) %>%
+              magrittr::set_rownames(counts$Geneid)
+
+(dds0h <- DESeqDataSetFromMatrix(countData = counts_0h,
+                                 colData = samplesheet_0h,
+                                 design = ~ Strain))
+
+rld_0h <- rlog(dds0h)
+          head(assay(rld_0h))
+
+sampleDists_0h <- dist( t( assay(rld_0h) ) )
+                  head(sampleDists_0h)
+
+sampleDistMatrix_0h <- as.matrix( sampleDists_0h )
+                       rownames(sampleDistMatrix_0h) <- paste( rld_0h$Strain, rld_0h$GAT201, sep="-" )
+                       colnames(sampleDistMatrix_0h) <- NULL
+                       
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+pheatmap(sampleDistMatrix_0h,
+         clustering_distance_rows=sampleDists_0h,
+         clustering_distance_cols=sampleDists_0h,
+         col=colors, cex = 1,
+         main = "Heatmap of SampleDists_0h",
+         filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/Heatmap of SampleDists_0h.jpg")
+
+```
+
+
+## Heatmap 30min
+
+```{r heatmap-30min}
+samplesheet_30m <- dplyr::filter(samplesheet, Time == "30")
+                   print(samplesheet_30m)
+
+counts_30m <- dplyr::select(counts, samplesheet_30m$SampleID) %>%
+              magrittr::set_rownames(counts$Geneid)
+
+(dds30m <- DESeqDataSetFromMatrix(countData = counts_30m,
+                                 colData = samplesheet_30m,
+                                 design = ~ Condition + Strain))
+
+rld_30m <- rlog(dds30m)
+           head(assay(rld_30m))
+
+sampleDists_30m <- dist( t( assay(rld_30m) ) )
+           head(sampleDists_30m)
+
+sampleDistMatrix_30m <- as.matrix( sampleDists_30m )
+          rownames(sampleDistMatrix_30m) <- paste( rld_30m$Strain, rld_30m$Condition, sep="-" )
+          colnames(sampleDistMatrix_30m) <- NULL
+          
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+pheatmap(sampleDistMatrix_30m,
+         clustering_distance_rows=sampleDists_30m,
+         clustering_distance_cols=sampleDists_30m,
+         col=colors, cex = 1,
+         main = "Heatmap of SampleDists_30m",
+         filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/Heatmap of SampleDists_30m.jpg")
+```
+
+
+## Heatmap 2hrs
+
+```{r heatmap-2hrs}
+samplesheet_2h <- dplyr::filter(samplesheet, Time == "120")
+                  print(samplesheet_2h)
+
+counts_2h <-   dplyr::select(counts, samplesheet_2h$SampleID) %>%
+               magrittr::set_rownames(counts$Geneid)
+
+(dds2h <- DESeqDataSetFromMatrix(countData = counts_2h,
+                                 colData = samplesheet_2h,
+                                 design = ~ Condition + Strain))
+
+rld_2h <- rlog(dds2h)
+          head(assay(rld_2h))
+
+sampleDists_2h <- dist( t( assay(rld_2h) ) )
+                  head(sampleDists_2h)
+
+sampleDistMatrix_2h <- as.matrix( sampleDists_2h )
+                      rownames(sampleDistMatrix_2h) <- paste( rld_2h$Strain, rld_2h$Condition, sep="-" )
+                      colnames(sampleDistMatrix_2h) <- NULL
+                      
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+pheatmap(sampleDistMatrix_2h,
+         clustering_distance_rows=sampleDists_2h,
+         clustering_distance_cols=sampleDists_2h,
+         col=colors, cex = 1,
+         main = "Heatmap of SampleDists_2h",
+         filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/Heatmap of SampleDists_2h.jpg")
+
+```
+
+
+## Heatmap 4hrs
+
+```{r heatmap-4hrs}
+samplesheet_4h <- dplyr::filter(samplesheet, Time == "240")
+                  print(samplesheet_4h)
+
+counts_4h <-   dplyr::select(counts, samplesheet_4h$SampleID) %>%
+               magrittr::set_rownames(counts$Geneid)
+
+(dds4h <- DESeqDataSetFromMatrix(countData = counts_4h,
+                                 colData = samplesheet_4h,
+                                 design = ~ Condition + Strain))
+
+rld_4h <- rlog(dds4h)
+          head(assay(rld_4h))
+
+sampleDists_4h <- dist( t( assay(rld_4h) ) )
+                  head(sampleDists_4h)
+
+sampleDistMatrix_4h <- as.matrix( sampleDists_4h )
+                      rownames(sampleDistMatrix_4h) <- paste( rld_4h$Strain, rld_4h$Condition, sep="-" )
+                      colnames(sampleDistMatrix_4h) <- NULL
+                      
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+pheatmap(sampleDistMatrix_4h,
+         clustering_distance_rows=sampleDists_4h,
+         clustering_distance_cols=sampleDists_4h,
+         col=colors, cex = 1,
+         main = "Heatmap of SampleDists_4h",
+         filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/Heatmap of SampleDists_4h.jpg")
+
+```
+
+# PCA Plot
+
+## Plot PCA for 0h
+
+```{r PCA Plot rld_0h}
+plotPCA(rld_0h, intgroup = c("Strain", "Condition"))
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/PC12_0h.jpeg")
+       
+```
+How to add a title?
+
+
+## Plot PCA for 30min
+```{r PCA Plot rld_30m}
+plotPCA(rld_30m, intgroup = c("Strain", "Condition"))
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/PC12_30m.jpeg")
+```
+
+## Plot PCA for 2h
+```{r PCA Plot rld_2h}
+plotPCA(rld_2h, intgroup = c("Strain", "Condition"))
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/PC12_2h.jpeg")
+```
+
+## Plot PCA for 4h
+```{r PCA Plot rld_4h}
+plotPCA(rld_4h, intgroup = c("Strain", "Condition"))
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/PC12_4h.jpeg")
+```
+
+# Differential gene expression testing
+
+## dds0h
+This will perform the following steps: 
+The estimation of size factors (which control for differences in the library size of the sequencing experiments) Tthe estimation of dispersion for each gene
+Fitting a generalized linear model.
+Design goes here
+```{r DESeq on dds0h}
+dds0h <- DESeq(dds0h)
+```
+
+Calling results without any arguments will extract the estimated log2 fold changes and p values for the last variable in the design formula. If there are more than 2 levels for this variable, results will extract the results table for a comparison of the last level over the first level.
+```{r DESeq results for dds0h}
+(res0h <- results (dds0h))
+```
+
+Use 'relevel' to change order of comparison
+dds0h$Strain <- relevel(dds0h$Strain, "A")
+
+As res is a DataFrame object, it carries metadata with information on the meaning of the columns
+```{r meaning of the columns metadata for ress0h}
+mcols(res0h, use.names=TRUE)
+```
+
+Summarise results.
+```{r summary res0h}
+summary(res0h)
+```
+
+There are two ways to be more strict about which set of genes are considered significant:
+
+1) lower the false discovery rate threshold (the threshold on 'padj' in the results table)
+2) Raise the log2 fold change threshold from 0 using the 'lfcThreshold' argument of results. 
+See the DESeq2 vignette for a demonstration of the use of this argument.
+If we lower the false discovery rate threshold, we should also tell this value to results(), so that the function will use an alternative threshold for the optimal independent filtering step.
+```{r lower FDR and raise log2 fold change threshold res0h }
+res0h.05 <- results(dds0h, alpha=.05)
+table(res0h.05$padj < .05)
+```
+How can I compare (a+A) against (B+M)?
+
+
+## dds30m
+```{r DESeq on dds30m}
+dds30m <- DESeq(dds30m)
+        (res30m <- results (dds30m))
+        mcols(res30m, use.names=TRUE)
+        summary(res30m)
+```
+## dds2h
+```{r DESeq on dds2h}
+dds2h <- DESeq(dds2h)
+        (res2h <- results (dds2h))
+        mcols(res2h, use.names=TRUE)
+        summary(res2h)
+```
+## dds4h
+```{r DESeq on dds4h}
+dds4h <- DESeq(dds4h)
+        (res4h <- results (dds4h))
+        mcols(res4h, use.names=TRUE)
+        summary(res4h)
+```
+
+
+```{r lower FDR and raise log2 fold change threshold res4h }
+res4h.05 <- results(dds4h, alpha=.05)
+            summary(res4h.05)
+            table(res4h.05$padj < .05)
+            summary(res4h.05)
+```
+
+
+In general, the results for a comparison of any two levels of a variable can be extracted using the contrast argument to results. The user should specify three values: the name of the variable, the name of the level in the numerator, and the name of the level in the denominator. Here we extract results for the log2 of the fold change of one cell line over another:
+```{r}
+( res.GAT201 <- results(dds4h, contrast=c("Strain", "A", "M")) )
+                summary(res.GAT201)
+```
+
+# Plotting counts for individual genes
+
+A quick way to visualize the counts for a particular gene is to use the 'plotCount's function, which takes as arguments the DESeqDataSet, a gene name, and the group over which to plot the counts.
+
+```{r plot counts for topgenes in res4h.05}
+topGene <- rownames(res4h.05)[which.min(res4h.05$padj)]
+plotCounts(dds, gene=topGene, intgroup=c("Strain"))
+```
+
+Use ggplot2 to plot counts
+```{r ggplot2 for dds4h top genes}
+data <- plotCounts(dds4h, gene=topGene, intgroup=c("Strain","Media","BioRep"), returnData=TRUE)
+ggplot(data, aes(x=Strain, y=count, color=Media)) +
+  scale_y_log10() + 
+  geom_point(position=position_jitter(width=.1,height=0), size=3)
+```
+
+Here we use a more structural arrangement instead of random jitter, and color by the Media.
+```{r}
+ggplot(data, aes(x=Strain, y=count, fill=Media)) +
+  scale_y_log10() + 
+  geom_dotplot(binaxis="y", stackdir="center")
+```
+
+# MA Plot Fold Change
+
+An 'MA-plot' provides a useful overview for an experiment with a two-group comparison. The log2 fold change for a particular comparison is plotted on the y-axis and the average of the counts normalized by size factor is shown on the x-axis 
+```{r plotMA for res4h.05}
+plotMA(res4h.05, ylim=c(-5,5))
+```
+
+```{r plotMA for res4h.05 label topgene}
+plotMA(res4h.05, ylim=c(-5,5))
+with(res4h.05[topGene, ], {
+  points(baseMean, log2FoldChange, col="dodgerblue", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, topGene, pos=2, col="dodgerblue")
+})
+```
+
+# Gene Clustering
+Select the 'x' genes with the highest variance across samples. 
+We will work with the rlog transformed counts.
+
+Load 'genefilter'
+```{r load genefilter}
+library("genefilter")
+```
+
+## rld_4h Top 50
+```{r rld_4h Top 50 list}
+topVarGenes50 <- head(order(-rowVars(assay(rld_4h))),50)
+print(topVarGenes50)
+write.csv(topVarGenes50, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_4h_top50.csv")
+```
+
+## rld_4h Top 100
+```{r rld_4h Top 100 list}
+topVarGenes100 <- head(order(-rowVars(assay(rld_4h))),100)
+print(topVarGenes100)
+write.csv(topVarGenes100, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_4h_top100.csv")
+```
+
+# Gene clustering Heatmap
+
+The heatmap becomes more interesting if we do not look at absolute expression strength but rather at the amount by which each gene deviates in a specific sample from the gene’s average across all samples. Hence, we center each genes’ values across samples, and plot a heatmap.
+
+## rld_4h Top 50
+```{r Gene Heatmap for rld_4h top 50}
+mat4h <- assay(rld_4h)[ topVarGenes50, ]
+mat4h <- mat4h - rowMeans(mat4h)
+df <- as.data.frame(colData(rld_4h)[,c("Media","Strain")])
+pheatmap(mat4h, main = "Top 50 genes at 4 hours", annotation_col=df, fontsize =10, fontsize_row = 4, filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/Heatmap4h_top50.jpg")
+write.csv(mat4h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat4h_top50.csv")
+```
+
+## rld_4h Top 100
+```{r Gene Heatmap for rld_4h top 100}
+mat4h <- assay(rld_4h)[ topVarGenes100, ]
+mat4h <- mat4h - rowMeans(mat4h)
+df <- as.data.frame(colData(rld_4h)[,c("Media","Strain")])
+pheatmap(mat4h, main = "Top 100 genes at 4 hours", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat4h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat4h_top100.csv")
+```
+```{r rld_0h Top 250 list}
+topVarGenes250_0h <- head(order(-rowVars(assay(rld_0h))),250)
+print(topVarGenes250_0h)
+write.csv(topVarGenes100, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_0h_top250.csv")
+
+mat0h <- assay(rld_0h)[ topVarGenes250_0h, ]
+mat0h <- mat0h - rowMeans(mat0h)
+df <- as.data.frame(colData(rld_0h)[,c("Media","Strain")])
+pheatmap(mat0h, main = "Top 250 genes at 0 hours", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat0h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat0h_top250.csv")
+```
+
+```{r rld_30m Top 250 list}
+topVarGenes250_30m <- head(order(-rowVars(assay(rld_30m))),250)
+print(topVarGenes250_30m)
+write.csv(topVarGenes250_30m, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_30m_top250.csv")
+
+mat30m <- assay(rld_30m)[ topVarGenes250_30m, ]
+mat30m <- mat30m - rowMeans(mat30m)
+df <- as.data.frame(colData(rld_30m)[,c("Media","Strain")])
+pheatmap(mat30m, main = "Top 250 genes at 30 mins", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat30m, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat30m_top250.csv")
+```
+
+
+```{r rld_2h Top 250 list}
+topVarGenes250_2h <- head(order(-rowVars(assay(rld_2h))),250)
+print(topVarGenes250_2h)
+write.csv(topVarGenes250_2h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_2h_top250.csv")
+
+mat2h <- assay(rld_2h)[ topVarGenes250_2h, ]
+mat2h <- mat2h - rowMeans(mat2h)
+df <- as.data.frame(colData(rld_2h)[,c("Media","Strain")])
+pheatmap(mat2h, main = "Top 250 genes at 2 hours", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat2h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat2h_top250.csv")
+```
+
+
+```{r rld_4h Top 250 list}
+topVarGenes250_4h <- head(order(-rowVars(assay(rld_4h))),250)
+print(topVarGenes250_4h)
+write.csv(topVarGenes250_4h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_4h_top250.csv")
+
+mat4h <- assay(rld_4h)[ topVarGenes250_4h, ]
+mat4h <- mat4h - rowMeans(mat4h)
+df <- as.data.frame(colData(rld_4h)[,c("Media","Strain")])
+pheatmap(mat4h, main = "Top 250 genes at 4 hours", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat4h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat4h_top250.csv")
+```
+
+
+```{r rld_30m Top 1000 list}
+topVarGenes1000_30m <- head(order(-rowVars(assay(rld_30m))),1000)
+head(topVarGenes1000_30m)
+write.csv(topVarGenes1000_30m, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_30m_top1000.csv")
+
+mat30m <- assay(rld_30m)[ topVarGenes1000_30m, ]
+mat30m <- mat30m - rowMeans(mat30m)
+df <- as.data.frame(colData(rld_30m)[,c("Media","Strain")])
+pheatmap(mat30m, main = "Top 1000 genes at 30 min", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat30m, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat30m_top1000.csv")
+```
+
+
+```{r rld_2h Top 1000 list}
+topVarGenes1000_2h <- head(order(-rowVars(assay(rld_2h))),1000)
+head(topVarGenes1000_2h)
+write.csv(topVarGenes1000_2h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_2h_top1000.csv")
+
+mat2h <- assay(rld_2h)[ topVarGenes1000_2h, ]
+mat2h <- mat2h - rowMeans(mat2h)
+df <- as.data.frame(colData(rld_2h)[,c("Media","Strain")])
+pheatmap(mat2h, main = "Top 1000 genes at 2 hours", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat2h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat2h_top1000.csv")
+```
+
+
+```{r rld_4h Top 1000 list}
+topVarGenes1000_4h <- head(order(-rowVars(assay(rld_4h))),1000)
+head(topVarGenes1000_4h)
+write.csv(topVarGenes1000_4h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/rld_4h_top1000.csv")
+
+mat4h <- assay(rld_4h)[ topVarGenes1000_4h, ]
+mat4h <- mat4h - rowMeans(mat4h)
+df <- as.data.frame(colData(rld_4h)[,c("Media","Strain")])
+pheatmap(mat4h, main = "Top 1000 genes at 4 hours", annotation_col=df, fontsize =10, fontsize_row = 3)
+write.csv(mat4h, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/mat4h_top1000.csv")
+```
+
+
+
+
+
+# Calculate DESeq2 fold-change and p-values
+
+Take 'samplesheet_4h' and 'counts_4h' and put into DESeq2.
+
+The tilda sign (above #) expresses a formula in R e.g. compare whats happening in time and condition.
+
+
+```{r DESeq2}
+dds_4h <- DESeqDataSetFromMatrix(countData = counts_4h,
+                              colData = samplesheet_4h,
+                              design = ~ GAT201) %>%
+           DESeq()
+```
+# Results from DESeq
+
+Intercept = mean gene expression. 
+
+Condition y v capsule = results you want
+Gat201 No v Yes, therefore induced genes are induced in WT and repressed genes are repressed in Wt and so induced in Gat201?
+```{r Get results}
+ res_dds4h <- results(dds_4h)
+ head(res_dds4h)
+ sum(res_dds4h$padj <0.05, na.rm = T)
+```
+2898 genes have an adjusted p-value less than 0.05 when comparing Gat201 No vs Yes.
+
+
+# Plot MA
+
+Pick out what we want.
+
+This plot method is built in, you have more control in ggplot2.
+
+Plot base mean RNA abundance of normalised counts on x axis, log2fold change on y axis.
+
+Significant genes are in blue, to do with p value and false discovery rate. 
+
+Show up and down regulated above and below line of x axis.
+
+You will get:
+
+1) base mean
+
+2) log2fold change (how much the diff is)
+
+3) logfold change std error
+
+4) stat = test statistic
+
+5) pvalue (how likely diff is actually diff)
+
+6) adjusted p value (how likely diff is actually diff)
+```{r Plot MA_4h-1}
+MA_4h <- results(dds_4h,lfcThreshold = 0.05, alpha = 0.05)
+plotMA(MA_4h, ylim=c(-5,5))
+print(plotMA)
+summary(MA_4h)
+```
+
+# Significant Genes
+
+Use the same values for our cutoff to determine which genes we want to consider as significantly differentially expressed. 
+The 'resSigind' variable will contain genes that are induced and 'resSigrep' will contain genes that are repressed when comparing WT with Gat201 deletion mutants. 
+To create one dataframe of differentially expressed genes, combine the two dataframe's. 
+Use the 'rbind' command because the columns are the same in both sets. 
+Use 'rownames' to see the names of the differentially expressed genes.
+
+## Significant genes at 0 hours
+```{r Plot MA_0h}
+dds_0h <- DESeqDataSetFromMatrix(countData = counts_0h,
+                              colData = samplesheet_0h,
+                              design = ~ GAT201) %>%
+           DESeq()
+res_dds0h <- results(dds_0h)
+             head(res_dds0h)
+             sum(res_dds0h$padj <0.05, na.rm = T)
+ 
+ 
+MA_0h <- results(dds_0h,lfcThreshold = 0.05, alpha = 0.05)
+         plotMA(MA_0h, ylim=c(-5,5))
+         print(plotMA)
+         summary(MA_0h)
+ 
+
+resSigind = res_dds0h[ which(res_dds0h$padj < 0.05 & res_dds0h$log2FoldChange > 0), ]
+resSigrep = res_dds0h[ which(res_dds0h$padj < 0.05 & res_dds0h$log2FoldChange < 0), ]
+resSig = rbind(resSigind, resSigrep)
+
+write.csv(rownames(resSigind), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds0h_resSigind.csv")
+write.csv(rownames(resSigrep), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds0h_resSigrep.csv")
+```
+## Significant genes at 30 mins
+
+```{r Plot MA_30m}
+dds_30m <- DESeqDataSetFromMatrix(countData = counts_30m,
+                              colData = samplesheet_30m,
+                              design = ~ GAT201) %>%
+           DESeq()
+res_dds30m <- results(dds_30m)
+             head(res_dds30m)
+             sum(res_dds30m$padj <0.05, na.rm = T)
+ 
+ 
+MA_30m <- results(dds_30m,lfcThreshold = 0.05, alpha = 0.05)
+         plotMA(MA_30m, ylim=c(-5,5))
+         print(plotMA)
+         summary(MA_30m)
+         
+resSigind = res_dds30m[ which(res_dds30m$padj < 0.05 & res_dds30m$log2FoldChange > 0), ]
+resSigrep = res_dds30m[ which(res_dds30m$padj < 0.05 & res_dds30m$log2FoldChange < 0), ]
+resSig = rbind(resSigind, resSigrep)
+
+write.csv(rownames(resSigind), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds30m_resSigind.csv")
+write.csv(rownames(resSigrep), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds30m_resSigrep.csv")
+```
+## Significant genes at 2 hours
+
+```{r Plot MA_2h}
+dds_2h <- DESeqDataSetFromMatrix(countData = counts_2h,
+                              colData = samplesheet_2h,
+                              design = ~ GAT201) %>%
+           DESeq()
+res_dds2h <- results(dds_2h)
+             head(res_dds2h)
+             sum(res_dds2h$padj <0.05, na.rm = T)
+ 
+ 
+MA_2h <- results(dds_2h,lfcThreshold = 0.05, alpha = 0.05)
+         plotMA(MA_2h, ylim=c(-5,5))
+         print(plotMA)
+         summary(MA_2h)
+         
+resSigind = res_dds2h[ which(res_dds2h$padj < 0.05 & res_dds2h$log2FoldChange > 0), ]
+resSigrep = res_dds2h[ which(res_dds2h$padj < 0.05 & res_dds2h$log2FoldChange < 0), ]
+resSig = rbind(resSigind, resSigrep)
+
+write.csv(rownames(resSigind), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds2h_resSigind.csv")
+write.csv(rownames(resSigrep), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds2h_resSigrep.csv")
+```
+## Significant genes at 4 hours
+
+```{r Plot MA_4h}
+dds_4h <- DESeqDataSetFromMatrix(countData = counts_4h,
+                              colData = samplesheet_4h,
+                              design = ~ GAT201) %>%
+           DESeq()
+res_dds4h <- results(dds_4h)
+             head(res_dds4h)
+             sum(res_dds4h$padj <0.05, na.rm = T)
+ 
+ 
+MA_4h <- results(dds_4h,lfcThreshold = 0.05, alpha = 0.05)
+         plotMA(MA_4h, ylim=c(-5,5))
+         print(plotMA)
+         summary(MA_4h)
+         
+resSigind = res_dds4h[ which(res_dds4h$padj < 0.05 & res_dds4h$log2FoldChange > 0), ]
+resSigrep = res_dds4h[ which(res_dds4h$padj < 0.05 & res_dds4h$log2FoldChange < 0), ]
+resSig_4h = rbind(resSigind, resSigrep)
+
+write.csv(rownames(resSigind), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds4h_resSigind.csv")
+write.csv(rownames(resSigrep), file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds4h_resSigrep.csv")
+
+```
+
+
+# Gene Annotation
+```{r prepare GeneList}
+GeneDescription <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/gene_name_product.csv")
+GeneList <- select(GeneDescription, -X1)
+head(GeneList)
+```
+
+```{r prepare res_ddsx_resy files}
+
+UP4h <- read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/res_dds4h_resSigind.csv")
+UP4h1 <- select(UP4h, -X1)
+UP4hList<- dplyr::rename(UP4h1, Gene = x)  
+head(UP4hList)
+
+```
+
+
+
+
+
+```{r Match DE genes lists to GeneList 4h}
+DE4hUP<- dplyr::inner_join(UP4hList,GeneList)
+head(DE4hUP)
+write.csv(DE4hUP, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/DE4hUP.csv")
+summary(DE4hUP)
+
+```
+

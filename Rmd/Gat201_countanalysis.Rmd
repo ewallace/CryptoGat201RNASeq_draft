@@ -1,0 +1,633 @@
+---
+title: "Gat201 RNA Seq count analysis 2021-04-24EH"
+author: "Liz Hughes"
+date: "24/04/2021"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  word_document:
+    toc: yes
+    toc_depth: '2'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE , warning=FALSE, message=FALSE)
+```
+
+# GAT201 RNA Seq analysis_EHughes
+
+To carry out RNA-Seq I will use the Lexogen Quant Seq 3' mRNA-Seq library prep kit FWD. This is designed to generate illumina compatible libraries of sequences close to the 3' end of polyA RNA.
+
+Work flow: Reverse transcription ⇒ Removal of RNA ⇒ Second strand synthesis ⇒ Library amplification ⇒ Sequencing
+
+4 strains: KN99a, KN99 alpha, Gat201 deletion from the Madhani deletion collection (003) and Gat201 disruption from the Bahn collection (004).
+
+2 conditions: RPMI and RPMI+Serum (10%).
+
+2 BioReps for each strain.
+
+A single colony was grown in YPD, 30 degrees, 200rpm for 5 days.
+
+3.5 ml was transferred to 100ml fresh RPMI or RPMI+10% Serum and incubated at 37 degrees, 60rpm.
+
+2ml samples were taken from each rep at time 0hrs, fix and freeze and put at -80 degrees.
+
+At 30 mins, 2hrs and 4hrs 15 ml samples were collected, fix and freeze and put at -80 degrees.
+
+
+# Load packages used for analysis
+```{r Load packages}
+library(tidyverse)
+library(magrittr)
+library(cowplot)
+library(readxl)
+library(pheatmap)
+library(GGally)
+library(ggrepel)
+library(broom)
+library(Matrix)
+library(dendextend)
+
+theme_set(theme_cowplot(font_size = 12))
+
+geom_diagline <- function(size = 0.5, linetype = "dashed", ...) {
+    geom_abline(slope=1, intercept = 0, linetype = linetype, ...)
+}
+```
+
+# Load count data
+
+```{r Load count data }
+counts <- read_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/quantseqfwd_EH_050221/counts.txt",
+                   comment = "#")
+head (counts)
+```
+
+
+
+# Make a clustered heatmap of count data showing similarity between all samples
+
+Remove the first 6 columns that describe place in genome.
+
+Add 1 to every count to remove 0 counts because we need to log transform the counts for clustering.
+
+log transformed values.
+
+```{r Clustered heatmap}
+counts[,-(1:6)] %>%
+    add(1) %>%
+    log10() %>%
+    pheatmap(main = "heatmap of counts for all",show_rownames = FALSE)
+```
+
+
+# Prepare data
+
+```{r Prepare data}
+Data_set <-counts[,-(1:6)] %>%
+    add(1) %>%
+    log10()
+
+```
+
+# hclust analysis
+
+```{r hclust analysis}
+my_hclust_gene <- hclust(dist(Data_set), method = "complete")
+as.dendrogram(my_hclust_gene) %>%
+  plot(horiz = TRUE)
+
+```
+
+# Cutree
+
+```{r Dendogram}
+my_gene_col <- cutree(tree = as.dendrogram(my_hclust_gene), k = 2)
+my_gene_col <- data.frame(cluster = ifelse(test = my_gene_col == 1, yes = "cluster 1", no = "cluster 2"))
+head(my_gene_col)
+```
+
+
+# Load samplesheet with metadata
+Use 'read_csv' to read in sample sheet with metadata.
+
+```{r Load samplesheet}
+samplesheet <- 
+  read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/input_experiment/Gat201_samplesheet.csv") %>%
+  mutate(Group = factor(Group,
+              levels = c("A_Y_0", "A_R_30", "A_R_120", "A_R_240", "A_RS_30", "A_RS_120", "A_RS_240", "a_Y_0", "a_R_30", "a_R_120", "a_R_240", "a_RS_30", "a_RS_120", "a_RS_240", "B_Y_0", "B_R_30", "B_R_120", "B_R_240", "B_RS_30", "B_RS_120", "B_RS_240", "M_Y_0", "M_R_30", "M_R_120", "M_R_240", "M_RS_30", "M_RS_120", "M_RS_240")))
+samplesheet
+```
+
+# Make a tidy long-format count table, including normalized TPM values and Fold Change
+This data is used to make plots etc.
+
+Removing stuff: from 'set_names'
+
+Group by sample as df : from 'group_by'
+
+Normalization: from 'mutate'
+
+This is calculated from the actual count for each row /sum of all genes in that sample (sample ID) x 1e6 to give TPM (ratio so units do not matter).
+
+We can do this because our reads are at 3 end.
+
+For RNASeq using a different method we would have to normalize to the length of each gene as well.
+
+```{r Make a tidy long-format count table}
+counts_long <- counts %>%
+              set_names(str_remove(names(counts), "_R1_001_aln.bam")) %>%
+              select(-Chr,-Start,-End,-Strand,-Length) %>%
+              pivot_longer(!Geneid, 
+                            names_to = c("SampleID","SampleNo"), names_sep="_",
+                            values_to = "Count") %>%
+              group_by(SampleID) %>%
+              mutate(TPM = Count / sum(Count) * 1e6) %>%
+              ungroup() %>%
+              group_by(Geneid) %>%
+              mutate(FoldChange = TPM / mean(TPM)) %>%
+              ungroup() %>%
+              left_join(samplesheet)
+head(counts_long)
+```
+
+# Write long-format counts to an output file
+This is very long because for each gene we have lots of info.
+
+```{r Write long-format counts to an output file}
+counts_long %>%
+    select(Geneid,SampleID,Strain,Condition,Time,BioRep,Count,TPM) %>%
+    mutate(TPM = round(TPM, digits = 3)) %>%
+  dplyr::mutate(GAT201 = forcats::fct_collapse(Strain, Yes = c("a","A"), No = c("B","M")))
+```
+
+    write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/counts_tpms_longformat.txt")
+
+
+# Define a function to plot TPMs for a select list of genes
+Write as a function so only have to change gene names once on line 170
+```{r Define a function to plot TPMs}
+plot_tpm_somegenes <- function(mygenes = c("CNAG_01551","CNAG_06917"), 
+                               mydata = counts_long) {
+    ggplot(data = filter(mydata, Geneid %in% mygenes),
+           aes(colour = Geneid, x = Group, y = TPM)) +
+        geom_point(position=position_jitter(width=0.25)) + 
+        stat_summary(fun.min="mean",fun.max="mean",
+                     geom="errorbar",size=1,width=0.5,
+                     aes(group=Geneid)) +
+        scale_y_log10() + 
+        labs(y="RNA abundance (TPM)", colour="Gene") +
+        theme_cowplot(font_size = 12) + 
+        theme(axis.text.x = element_text(angle = 90), 
+              axis.title.x = element_blank(),
+              panel.grid.major.y = element_line(colour="grey80"))
+}
+```
+
+# Plot TPMs for two genes: Change genes in code above {r Define a function to plot TPMs}
+
+```{r Plot TPMs}
+plot_tpm_somegenes()
+```
+
+# Remember to change name to genes from line 170
+
+```{r Save Plot TPMs}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/TPM_Gat201_TSA3.jpeg",
+       width = 5,height=4)
+```
+
+# Reshape the TPMs into a "wide" table that we can use for heatmap
+This reshapse 'counts_long' using 'pivot_wider'
+
+'id_cols' is what to call the new columns
+
+'Geneid' take names used from 'SampleID' and the values used from 'TPM'
+
+```{r Reshape the TPMs into a wide table}
+
+tpms_wide <- counts_long %>%
+              pivot_wider(id_cols = Geneid, names_from = SampleID, values_from = TPM)
+
+
+```
+
+# Plot a clustered heatmap of normalized TPMs
+
+```{r Clustered heatmap of normalized TPMs}
+tpms_wide[,-1] %>%
+    add(1) %>%
+    log10() %>%
+    pheatmap(main = "heatmap of TPMs",show_rownames = FALSE)
+```
+
+# Plot scatter plots between all pairs of samples (careful, this code runs VERY slowly)
+
+tpms_wide[,-1] %>% add(1) %>% log10() %>% ggpairs()
+
+
+tpms_wide[,-1] %>% 
+  add(1) %>% 
+  log10() %>% 
+  ggpairs()
+
+# Calculate a summary table of mean, min, max TPM by gene
+
+```{r TPM summary table}
+genesummary <- 
+    counts_long %>%
+    group_by(Geneid) %>%
+    summarise(TPM.mean = mean(TPM), TPM.min = min(TPM), TPM.max = max(TPM))
+genesummary
+```
+
+```{r TPM summary table 2}
+genesummary2<-
+  counts_long %>%
+  group_by(Geneid) %>% 
+  summarise(TPM.max = max(TPM)) %>%
+  arrange(desc(TPM.max))
+genesummary2
+```
+
+
+# Create lists with TPM values all above thresholds 
+
+```{r TPM thresholds}
+genelist_mintpm20 <- filter(genesummary,TPM.min > 20)$Geneid
+genelist_mintpm100 <- filter(genesummary,TPM.min > 100)$Geneid
+genelist_mintpm500 <- filter(genesummary,TPM.min > 500)$Geneid
+genelist_mintpm500
+
+```
+
+# Reshape the fold changes into a "wide" table to use for heatmap and PCA
+
+```{r Reshape the fold changes into a "wide" table}
+foldchange_wide <- counts_long %>%
+    pivot_wider(id_cols = Geneid, names_from = SampleID, values_from = FoldChange)
+
+```
+
+# Plot a clustered heatmap of fold changes, for genes with mininum TPM 20
+
+```{r Plot a clustered heatmap of fold changes}
+Heatmap <- foldchange_wide %>%
+    filter(Geneid %in% genelist_mintpm20) %>%
+    .[,-1] %>%
+    log10() %>%
+    pheatmap(main = "Heatmap of FoldChange, genes with min(TPM) > 20",
+             show_rownames = FALSE,
+             color = colorRampPalette(c("blue", "white","red"))(31),
+             breaks = seq(-1.1,1.1,length=32), 
+             filename = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/Heatmap_Foldchange_mintpm20.pdf")
+Heatmap
+```
+ 
+# To print heatmap above
+
+```{r Print heatmap}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/Heatmap_Foldchange_mintpm20.jpeg",)
+ 
+```
+The 4 main clusters are slpit by time. 
+
+1) YO 
+2) R/RS 30 min 
+3) R/RS 120 min 
+4) R/RS 240 min
+
+# Principal Component Analysis 
+
+## For genes with min. TPM 20
+
+```{r PCA TPM 20}
+pca_log10foldchange_mintpm20 <- 
+    foldchange_wide %>%
+    filter(Geneid %in% genelist_mintpm20) %>%
+    .[,-1] %>%
+    log10() %>%
+    prcomp(scale=TRUE)
+
+  
+```
+
+## Plot first and second principal components by sample
+```{r PC12}
+plot_pca_log10foldchange_mintpm20_PC12 <- 
+pca_log10foldchange_mintpm20 %>%
+    broom::tidy(matrix = "rotation") %>%
+    rename(SampleID=column) %>%
+    left_join(samplesheet) %>%
+    pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
+    ggplot(aes(PC1, PC2)) +
+    geom_vline(aes(xintercept = 0),size=0.2,colour = "grey50") +
+    geom_hline(aes(yintercept = 0),size=0.2,colour = "grey50")  +
+    geom_text(
+        aes(label = SampleID,colour=Condition),
+        key_glyph = "point",
+    ) +
+    coord_equal()
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/plot_pca_log10foldchange_mintpm20_PC12.jpeg",
+       plot_pca_log10foldchange_mintpm20_PC12,width = 4,height=4)
+plot_pca_log10foldchange_mintpm20_PC12
+```
+Blue = Y at 0 min. 
+
+Green/Red Top Left = R/RS at 4 hours.
+
+Green/Red Bottom Left = R.RS at 2 hours.
+
+Green/Red at Bottom Right = R/Rs at 30 min.
+
+## Plot second and third principal components by sample
+```{r PC23}
+plot_pca_log10foldchange_mintpm20_PC23 <- 
+pca_log10foldchange_mintpm20 %>%
+    broom::tidy(matrix = "rotation") %>%
+    rename(SampleID=column) %>%
+    left_join(samplesheet) %>%
+    pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
+    ggplot(aes(PC2, PC3)) +
+    geom_vline(aes(xintercept = 0),size=0.2,colour = "grey50") +
+    geom_hline(aes(yintercept = 0),size=0.2,colour = "grey50")  +
+    geom_text(
+        aes(label = SampleID,colour=Condition),
+        key_glyph = "point"
+    ) +
+    coord_equal()
+plot_pca_log10foldchange_mintpm20_PC23
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/plot_pca_log10foldchange_mintpm20_PC23.jpeg",
+       plot_pca_log10foldchange_mintpm20_PC23,width = 4,height=4)
+```
+Blue = Y at 0 min. 
+
+Red Top Right(4,8,18,22) =KN99 A/a R at 4 hours.
+
+Green Mid right (11,14,25,28) = KN99 A/a RS at 4 hours.
+
+Red Mid Right (32,36,46,50) = Gat201 B/M R at 4 hours.
+
+Green Bottom Right (39,42,53,56) = Gat201 B/M RS at 4 hours.
+
+Red/Green collected at the Left Side = Mix of 30 min and 2 hours for all 4 strains with slight media separation.
+
+## Plot third and fourth principal components by sample
+```{r PC34}
+plot_pca_log10foldchange_mintpm20_PC34 <- 
+pca_log10foldchange_mintpm20 %>%
+    broom::tidy(matrix = "rotation") %>%
+    rename(SampleID=column) %>%
+    left_join(samplesheet) %>%
+    pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
+    ggplot(aes(PC3, PC4)) +
+    geom_vline(aes(xintercept = 0),size=0.2,colour = "grey50") +
+    geom_hline(aes(yintercept = 0),size=0.2,colour = "grey50")  +
+    geom_text(
+        aes(label = SampleID,colour=Condition),
+        key_glyph = "point"
+    ) +
+    coord_equal()
+plot_pca_log10foldchange_mintpm20_PC34
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/plot_pca_log10foldchange_mintpm20_PC34.pdf",
+       plot_pca_log10foldchange_mintpm20_PC34,width = 4,height=4)
+```
+Blue = Y at 0 mis. 
+
+39,42,53,56 (Green) = Gat201 B/M RS at 4 hours.
+
+32,36,46,50 (Red) = Gat201 B/M R at 4 hours.
+
+11,14,25,28 (Green) = KN99A/a RS at 4 hours.
+
+4,8,18,22 (Red) = KN99A/a R at 4 hours.
+
+38,41,52,55 (Green) = Gat201 B/M RS at 2 hours.
+
+37,40,51,54 (Green) = Gat201 B/M RS at 30 min.
+
+
+## Plot  fourth and fifthprincipal components by sample
+```{r PC45}
+plot_pca_log10foldchange_mintpm20_PC45 <- 
+pca_log10foldchange_mintpm20 %>%
+    broom::tidy(matrix = "rotation") %>%
+    rename(SampleID=column) %>%
+    left_join(samplesheet) %>%
+    pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
+    ggplot(aes(PC4, PC5)) +
+    geom_vline(aes(xintercept = 0),size=0.2,colour = "grey50") +
+    geom_hline(aes(yintercept = 0),size=0.2,colour = "grey50")  +
+    geom_text(
+        aes(label = SampleID,colour=Condition),
+        key_glyph = "point"
+    ) +
+    coord_equal()
+plot_pca_log10foldchange_mintpm20_PC45
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/plot_pca_log10foldchange_mintpm20_PC45.pdf",
+       plot_pca_log10foldchange_mintpm20_PC45,width = 4,height=4)
+```
+
+## Plot PCA loadings, i.e. percent variance explained by each PC
+```{r Plot PCA loadings}
+plot_pcaloading_log10foldchange_mintpm20 <- 
+pca_log10foldchange_mintpm20 %>%
+    broom::tidy(matrix = "d") %>%
+    ggplot(aes(PC, percent)) +
+    geom_col(fill="blue")   + 
+    scale_x_continuous(breaks = 1:12,limits = c(0.5,12.5)) +
+    scale_y_continuous(
+        labels = scales::percent_format(),
+        expand = c(0, 0)
+    ) +
+    theme_minimal_hgrid(12)
+
+plot_pcaloading_log10foldchange_mintpm20
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/plot_pcaloading_log10foldchange_mintpm20.jpeg",
+       plot_pcaloading_log10foldchange_mintpm20,width = 4,height=4)
+```
+
+# Summarize TPMs by Group (i.e. groups of replicates for the same condition)
+```{r Summarize TPMs by Group}
+tpms_bygroup <- 
+    counts_long  %>%
+    group_by(Geneid,Group,Media,Time,Condition,Strain) %>%
+    summarise(TPM = mean(TPM), FoldChange = mean(FoldChange)) 
+tpms_bygroup
+```
+
+# Make wide-format mean TPMs by group, to use for scatter plots
+```{r Make wide-format mean TPMs by group}
+tpms_bygroup_wide <- tpms_bygroup %>%
+    pivot_wider(id_cols = Geneid, names_from = Group, values_from = TPM)
+```
+
+# Plot mean TPMs 
+It gets messy from here on in...bear with me
+```{r Plot mean TPMs}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_Y_0 + A_Y_0,y=M_Y_0 + B_Y_0))+
+  geom_point(colour = "grey40", size = 0.5)+
+   geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_04105"),
+              label="hp",hjust = 1.1,vjust = -0.1, colour= "darkred")
+```
+
+```{r Plot mean TPMs 2}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_Y_0 + A_Y_0,y=M_Y_0 + B_Y_0))+
+    geom_point(colour = "grey40", size = 0.5, )+
+  scale_x_log10("a_Y_0 + A_Y_0") + scale_y_log10("M_Y_0 + B_Y_0")
+  
+```
+
+```{r Plot mean TPMs 3}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_R_30 + A_R_30,y=M_R_30 + B_R_30))+
+       geom_point(colour = "grey40", size = 0.5, )+
+       scale_x_log10("a_R_30 + A_R_30") + scale_y_log10("M_R_30 + B_R_30")
+  
+```
+
+
+```{r Plot mean TPMs 4}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_R_120 + A_R_120,y=M_R_120 + B_R_120))+
+       geom_point(colour = "grey40", size = 0.5, )+
+       scale_x_log10("a_R_120 + A_R_120") + scale_y_log10("M_R_120 + B_R_120")
+  
+```
+
+
+```{r Plot mean TPMs 5}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_R_240 + A_R_240,y=M_R_240 + B_R_240))+
+       geom_point(colour = "grey40", size = 0.5, )+
+  geom_point(data = filter(tpms_bygroup_wide, 
+                             M_R_30 + B_R_30 > 10, 
+                             M_R_30 + B_R_30/a_R_30 + A_R_30 > 2 ),
+               colour = "blue", size = 0.5) +
+    geom_point(data = filter(tpms_bygroup_wide, 
+                             M_R_30 + B_R_30 > 500, 
+                             M_R_30 + B_R_30/a_R_30 + A_R_30 > 2 ),
+               colour = "yellow", size = 0.5) +
+  geom_point(data = filter(tpms_bygroup_wide, 
+                             M_R_30 + B_R_30 > 10, 
+                             M_R_30 + B_R_30/a_R_30 + A_R_30 < 0.5 ),
+               colour = "red", size = 0.5) +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_01551"),
+              label="Gat201",hjust = 1.1,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_06762"),
+              label="Gat204",hjust = 2,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_05835"),
+              label="Liv3",hjust = 1.1,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_03012"),
+              label="CQS1",hjust = 1.1,vjust = -0.1, colour= "black") +
+   labs(title="Comparing a_R_240 + A_R_240 with M_R_240 + B_R_240",#
+        subtitle = "(MB>10, MB/aA>2:blue) and (MB>500, MB/aA>2, yellow) and (MB>10, MB/aA<0.5, red)")+
+scale_x_log10("a_R_240 + A_R_240") + scale_y_log10("M_R_240 + B_R_240")
+```
+
+```{r Plot mean TPMs 6}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_Y_0 + A_Y_0,y=M_Y_0 + B_Y_0))+
+       geom_point(colour = "grey40", size = 0.5, )+
+  geom_point(data = filter(tpms_bygroup_wide, 
+                           M_Y_0 + B_Y_0 > 10,
+                           M_Y_0 + B_Y_0 / a_Y_0 + A_Y_0 >2),
+               colour = "blue", size = 0.5) +
+    geom_point(data = filter(tpms_bygroup_wide, 
+                             M_Y_0 + B_Y_0 > 500,
+                           M_Y_0 + B_Y_0 / a_Y_0 + A_Y_0 >2),
+               colour = "yellow", size = 0.5) +
+  geom_point(data = filter(tpms_bygroup_wide, 
+                             M_Y_0 + B_Y_0 > 10,
+                           M_Y_0 + B_Y_0 / a_Y_0 + A_Y_0 >0.5),
+               colour = "red", size = 0.5) +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_01551"),
+              label="Gat201",hjust = 1.1,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_06762"),
+              label="Gat204",hjust = 2,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_05835"),
+              label="Liv3",hjust = 1.1,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_03012"),
+              label="CQS1",hjust = 1.1,vjust = -0.1, colour= "black") +
+   labs(title="Comparing a_Y_0 + A_Y_0 with M_Y_0 + B_Y_0",#
+        subtitle = "(MB>10, MB/aA>2:blue) and (MB>500, MB/aA>2, yellow) and (MB>10, MB/aA<0.5, red)")+
+scale_x_log10("a_Y_0 + A_Y_0") + scale_y_log10("M_Y_0 + B_Y_0")
+```
+
+
+```{r Plot mean TPMs 7}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_Y_0 + A_Y_0,y=M_Y_0 + B_Y_0))+
+       geom_point(colour = "grey40", size = 0.5, )+
+  geom_point(data = filter(tpms_bygroup_wide, 
+                           a_Y_0 + A_Y_0 > 10,
+                           a_Y_0 + A_Y_0 /M_Y_0 + B_Y_0 > 2),
+               colour = "blue", size = 0.5) +
+               
+    geom_point(data = filter(tpms_bygroup_wide, 
+                           a_Y_0 + A_Y_0 > 500,
+                           a_Y_0 + A_Y_0 /M_Y_0 + B_Y_0 > 2),
+               colour = "yellow", size = 0.5) +
+                 
+  geom_point(data = filter(tpms_bygroup_wide, 
+                           a_Y_0 + A_Y_0 > 10,
+                           a_Y_0 + A_Y_0 /M_Y_0 + B_Y_0 < 0.5),
+               colour = "red", size = 0.5) +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_01551"),
+              label="Gat201",hjust = 1.1,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_06762"),
+              label="Gat204",hjust = 2,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_05835"),
+              label="Liv3",hjust = 1.1,vjust = -0.1, colour= "black") +
+    geom_text(data = filter(tpms_bygroup_wide,Geneid =="CNAG_03012"),
+              label="CQS1",hjust = 1.1,vjust = -0.1, colour= "black") +
+   labs(title="Comparing a_Y_0 + A_Y_0 with M_Y_0 + B_Y_0",#
+        subtitle = "(aA>10, aA/MB>2:blue) and (aA>500, aA/MB>2, yellow) and (aA>10, aA/MB<0.5, red)")+
+scale_x_log10("a_Y_0 + A_Y_0") + scale_y_log10("M_Y_0 + B_Y_0")
+```
+
+
+```{r Save Plot mean TPMs}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_counts/TPMs_aAR240vsMBR240_reverse.png",
+       width = 8,height=5)
+```
+
+```{r Plot mean TPMs 8}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_RS_30 + A_RS_30,y=M_RS_30 + B_RS_30))+
+       geom_point(colour = "grey40", size = 0.5, )+
+       scale_x_log10("a_RS_30 + A_RS_30") + scale_y_log10("M_RS_30 + B_R_S30")
+  
+```
+
+```{r Plot mean TPMs 9}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_RS_120 + A_RS_120,y=M_RS_120 + B_RS_120))+
+       geom_point(colour = "grey40", size = 0.5, )+
+       scale_x_log10("a_RS_120 + A_RS_120") + scale_y_log10("M_RS_120 + B_RS_120")
+  
+```
+
+```{r Plot mean TPMs 10}
+ggplot(data = tpms_bygroup_wide, 
+       aes(x=a_RS_240 + A_RS_240,y=M_RS_240 + B_RS_240))+
+       geom_point(colour = "grey40", size = 0.5, )+
+       scale_x_log10("a_RS_240 + A_RS_240") + scale_y_log10("M_RS_240 + B_RS_240")
+  
+```
+
+
+
+

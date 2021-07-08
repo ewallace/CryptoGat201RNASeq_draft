@@ -1,0 +1,53 @@
+---
+title: "H99 GFF3 file"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE , warning=FALSE, message=FALSE)
+```
+
+
+
+```{r}
+library(tidyr)
+library(readr)
+library(dplyr)
+library(magrittr)
+library(readxl)
+```
+
+
+```{r }
+gene_description <- read.delim("~/Documents/GitHub/CryptoGat201RNASeq_draft/input_annotation/H99.10p.aATGcorrected.2018-12-03.gff3",
+header=FALSE, quote="")
+```
+
+
+
+```{r load data and tidy }
+gene_desc_new <- filter(gene_description, V3 == "mRNA")%>% 
+                 separate(V9,into = c("ID", "Parent", "Name", "Codon_start", "Locus", "Product"),
+                 sep=";",
+                 remove = FALSE)
+gene_name_product1<- select(gene_desc_new,  Name, Product)
+gene_name_product2<-dplyr::rename(gene_name_product1, Gene = Name)  
+gene_name_product3 <-gene_name_product2 %>% mutate (Gene = as.character(gsub ("Name=", "", Gene)))
+gene_name_product <-gene_name_product3 %>% mutate (Product = as.character(gsub ("product=", "", Product)))
+head(gene_name_product)
+write.csv(gene_name_product, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/gene_name_product.csv")
+
+```
+
+```{r select name and product and tidy}
+gene_name_product1<- select(gene_desc_new,  Name, Product)
+gene_name_product2<-dplyr::rename(gene_name_product1, Gene = Name)  
+gene_name_product3 <-gene_name_product2 %>% mutate (Gene = as.character(gsub ("Name=", "", Gene)))
+gene_name_product <-gene_name_product3 %>% mutate (Product = as.character(gsub ("product=", "", Product)))
+head(gene_name_product)
+write.csv(gene_name_product, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/gene_name_product.csv")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+

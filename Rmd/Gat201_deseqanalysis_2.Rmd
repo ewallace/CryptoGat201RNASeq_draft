@@ -1,0 +1,1362 @@
+---
+title: "Gat201 RNA Seq deseq-analysis_2 2021-06-18EH"
+author: "Liz Hughes"
+date: "18/06/2021"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+  word_document:
+    toc: yes
+    toc_depth: '2'
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE , warning=FALSE, message=FALSE)
+```
+
+# GAT201 RNA Seq analysis_EHughes
+
+To carry out RNA-Seq I will use the Lexogen Quant Seq 3' mRNA-Seq library prep kit FWD. This is designed to generate illumina compatible libraries of sequences close to the 3' end of polyA RNA.
+
+Work flow: Reverse transcription ⇒ Removal of RNA ⇒ Second strand synthesis ⇒ Library amplification ⇒ Sequencing
+
+4 strains: KN99a, KN99 alpha, Gat201 deletion from the Madhani deletion collection (003) and Gat201 disruption from the Bahn collection (004).
+
+2 conditions: RPMI and RPMI+Serum (10%).
+
+2 BioReps for each strain.
+
+A single colony was grown in YPD, 30 degrees, 200rpm for 5 days.
+
+3.5 ml was transferred to 100ml fresh RPMI or RPMI+10% Serum and incubated at 37 degrees, 60rpm.
+
+2ml samples were taken from each rep at time 0hrs, fix and freeze and put at -80 degrees.
+
+At 30 mins, 2hrs and 4hrs 15 ml samples were collected, fix and freeze and put at -80 degrees.
+
+# Load packages used for analysis
+```{r Load packages used for analysis, include=FALSE}
+
+library(tidyr)
+library(readr)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(ggplot2)
+library(cowplot)
+library(biobroom)
+library(DESeq2)
+library(pheatmap)
+library(RColorBrewer)
+library(magrittr)
+library(markdown)
+library(forcats)
+library(ggrepel)
+
+
+theme_set(
+  theme_cowplot(font_size = 12) +
+    theme(panel.grid.major = element_line(colour = "grey80", size = 0.5))
+)
+
+```
+
+
+# Define colours for specific samples
+
+```{r define colours}
+WTup_colour   = "orange"
+WTdown_colour = "green"
+Gat201up_colour  = "red"
+Gat201down_colour = "blue"
+```
+
+
+# Load count data and remove unwanted parts of column names
+
+```{r load counts data}
+counts <- readr::read_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/quantseqfwd_EH_050221/counts.txt",
+                   comment = "#") %>% 
+          dplyr::rename_with(str_remove_all, pattern = "_S[0-9]+_R1_001_aln.bam")
+```
+
+# Load sample sheet and format for DESeq2's requirements: readxl::read_excel
+
+Connect sample names to informative data that generated the data.
+
+Extra steps to format for DESeq2. 
+
+Remove all samples not sequenced: 'dplyr::filter'
+
+Remove notes in column: 'dplyr::select'
+
+Set rownames to make format of table appropriate for DESeq: 'magrittr::set_rownames'
+
+```{r Load sample sheet}
+samplesheet <- readxl::read_excel("~/Documents/GitHub/CryptoGat201RNASeq_draft/input_experiment/Gat201_samplesheet.xlsx") %>%
+              magrittr::set_rownames(.$SampleID)%>%
+              dplyr::mutate(GAT201 = forcats::fct_collapse(Strain, Yes = c("a","A"), No = c("B","M")))
+```
+We now have all the ingredients to prepare our data object in a form that is suitable for analysis, namely:
+
+counts: a table with the read counts
+samplesheet: a table with information about the samples
+
+# Differential expression analysis 
+## Gat201 deletion (GAT201 = no) v WT (GAT201 = yes) 0h only
+```{r DESeq0h}
+samplesheet_0h <- dplyr::filter(samplesheet, Time == "0")
+                  print(samplesheet_0h)
+
+counts_0h <-   dplyr::select(counts, samplesheet_0h$SampleID) %>%
+               magrittr::set_rownames(counts$Geneid)
+
+dds_0h <- DESeqDataSetFromMatrix(countData = counts_0h,
+                                 colData = samplesheet_0h,
+                                 design = ~ GAT201)%>%
+        DESeq()
+```
+```{r}
+resultsNames(dds_0h)
+results_0h <- results(dds_0h, name="GAT201_No_vs_Yes")
+
+```
+
+jpeg(file= "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/MAPlot_dds0h.jpeg")
+MAplot_dds0h <- plotMA(results_0h, ylim=c(-5,5), alpha=.05)
+      
+dev.off()
+         
+
+
+```{r}
+jpeg(file= "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/MAPlot_dds0h.jpeg")
+MAplot_dds0h <- plotMA(results_0h, ylim=c(-7,7), alpha=.05)
+with(results_0h["CNAG_01551", ], {
+  points(baseMean, log2FoldChange, col="red", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "Gat201", cex =2, pos=2, col="red")
+})+
+ with(results_0h["CNAG_06568", ], {
+  points(baseMean, log2FoldChange, col="darkgreen", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "SKS1", cex =2,pos=3, col="darkgreen")
+ })+
+   with(results_0h["CNAG_01980", ], {
+  points(baseMean, log2FoldChange, col="magenta", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "HP", cex =2 ,pos=3, col="magenta")
+   })
+
+dev.off()
+
+```
+
+
+```{r DESeq0hcontd}
+tresults_0h <- biobroom::tidy.DESeqResults(results_0h)
+head(tresults_0h)
+
+tresults_0h %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_WT_0h.txt")
+
+de_Gat201up_0h <- dplyr::filter(tresults_0h, estimate > 1, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_Gat201up_0h
+
+readr::write_tsv(de_Gat201up_0h, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_0h.txt")
+readr::write_lines(de_Gat201up_0h$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_0h_genesonly.csv")
+
+
+de_Gat201down_0h <- dplyr::filter(tresults_0h, estimate < -1, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_Gat201down_0h
+
+readr::write_tsv(de_Gat201down_0h, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_0h.txt")
+readr::write_lines(de_Gat201down_0h$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_0h_genesonly.csv")
+
+plot_0h<- qplot(x = baseMean, y = estimate, data = tresults_0h, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "Gat201 mutants v WT at 0 hrs")
+plot_0h
+```
+
+```{r volcano 0h}
+volcano_0h <- 
+  ggplot(data = tresults_0h, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_0h, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_0h, colour = Gat201down_colour) +
+         
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+  
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+             y = "-log10(p.value)",
+        title = "Gat201 mutants v WT at 0h")
+volcano_0h
+
+```
+
+```{r save volcano plot oh}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_0h_volcano.png",
+       width = 5,height=5)
+```
+
+
+```{r volcano ohsp gene label}
+volcano_0hsp <- 
+  ggplot(data = tresults_0h, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_0h, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_0h, colour = Gat201down_colour) +
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_01551"), label="Gat201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_06762"), label="Gat204",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_063641"), label="Blp1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_00883"), label="Ecm2201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_05835"), label="Liv3",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_03012"), label="CQS1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_01681"), label="FCY2",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_06401"), label="Ric8",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_07470"), label="Pde2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_06241"), label="Cfo1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_02777"), label="Pho84",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_04755"), label="Bck1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_02357"), label="Mkk2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_04514"), label="Mpk1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_04969"), label="UGD1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_01626"), label="Ada2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_03024"), label="Rim15",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_0h, gene =="CNAG_04864"), label="Cir1",hjust = 1.1,vjust = -0.1, colour= "red")+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+             y = "-log10(p.value)",
+             title = "Gat201 mutants v WT at 0h")
+volcano_0hsp
+
+```
+
+
+
+```{r save volvano plot ohsp}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_0hsp_volcano.png",
+       width = 5,height=5)
+```
+
+
+
+## Gat201 deletion (GAT201 = no) v WT (GAT201 = yes)  30m only
+```{r DESeq30m}
+samplesheet_30m <- dplyr::filter(samplesheet, Time == "30")
+                  print(samplesheet_30m)
+
+counts_30m <-   dplyr::select(counts, samplesheet_30m$SampleID) %>%
+               magrittr::set_rownames(counts$Geneid)
+
+dds_30m <- DESeqDataSetFromMatrix(countData = counts_30m,
+                                 colData = samplesheet_30m,
+                                 design = ~ GAT201)%>%
+        DESeq()
+
+resultsNames(dds_30m)
+results_30m <- results(dds_30m, name="GAT201_No_vs_Yes")
+
+tresults_30m <- biobroom::tidy.DESeqResults(results_30m)
+head(tresults_30m)
+
+tresults_30m %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_WT_30m.txt")
+
+de_Gat201up_30m <- dplyr::filter(tresults_30m, estimate > 1, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_Gat201up_30m
+
+readr::write_tsv(de_Gat201up_30m, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_30m.txt")
+readr::write_lines(de_Gat201up_30m$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_30m_genesonly.csv")
+
+de_Gat201down_30m <- dplyr::filter(tresults_30m, estimate < 1, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_Gat201down_30m
+
+readr::write_tsv(de_Gat201down_30m, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_30m.txt")
+readr::write_lines(de_Gat201down_30m$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_30m_genesonly.csv")
+
+plot_30m<- qplot(x = baseMean, y = estimate, data = tresults_30m, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "Gat201 mutants v WT at 30 min")
+plot_30m
+
+volcano_30m <- 
+  ggplot(data = tresults_30m, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_30m, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_30m, colour = Gat201down_colour) +
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,10,20,30,40,50,60),
+                            limits = c(0,60), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "Gat201 mutants v WT at 30 min")
+volcano_30m
+
+```
+
+```{r save volcano plot 30m}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_30m_volcano.png",
+       width = 5,height=5)
+```
+
+```{r volcano 30msp gene label}
+volcano_30msp <- 
+  ggplot(data = tresults_30m, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_30m, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_30m, colour = Gat201down_colour) +
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_01551"), label="Gat201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_06762"), label="Gat204",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_063641"), label="Blp1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_00883"), label="Ecm2201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_05835"), label="Liv3",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_03012"), label="CQS1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_01681"), label="FCY2",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_06401"), label="Ric8",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_07470"), label="Pde2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_06241"), label="Cfo1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_02777"), label="Pho84",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_04755"), label="Bck1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_02357"), label="Mkk2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_04514"), label="Mpk1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_04969"), label="UGD1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_01626"), label="Ada2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_03024"), label="Rim15",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_30m, gene =="CNAG_04864"), label="Cir1",hjust = 1.1,vjust = -0.1, colour= "red")+
+          scale_y_continuous(breaks = c(0,10,20,30,40,50,60),
+                            limits = c(0,60), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "Gat201 mutants v WT at 30 min")
+volcano_30msp
+
+```
+
+
+```{r save volcano plot 30msp}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_30msp_volcano.png",
+       width = 5,height=5)
+```
+
+```{r}
+jpeg(file= "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/MAPlot_dds30m.jpeg")
+MAplot_dds30m <- plotMA(results_30m, ylim=c(-7,7), alpha=.05)
+with(results_30m["CNAG_01551", ], {
+  points(baseMean, log2FoldChange, col="red", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "Gat201", cex =2 ,pos=2, col="red")
+})+
+ with(results_30m["CNAG_06568", ], {
+  points(baseMean, log2FoldChange, col="darkgreen", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "SKS1", cex =2 ,pos=3, col="darkgreen")
+ })+
+   with(results_30m["CNAG_01980", ], {
+  points(baseMean, log2FoldChange, col="magenta", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "HP", cex =2 ,pos=4, col="magenta")
+   })
+dev.off()
+```
+
+## Gat201 deletion (GAT201 = no) v WT (GAT201 = yes)  2h only
+```{r DESeq2h}
+samplesheet_2h <- dplyr::filter(samplesheet, Time == "120")
+                  print(samplesheet_2h)
+
+counts_2h <-   dplyr::select(counts, samplesheet_2h$SampleID) %>%
+               magrittr::set_rownames(counts$Geneid)
+
+dds_2h <- DESeqDataSetFromMatrix(countData = counts_2h,
+                                 colData = samplesheet_2h,
+                                 design = ~ GAT201)%>%
+        DESeq()
+
+resultsNames(dds_2h)
+results_2h <- results(dds_2h, name="GAT201_No_vs_Yes")
+
+tresults_2h <- biobroom::tidy.DESeqResults(results_2h)
+head(tresults_2h)
+
+ggplot(data=tresults_2h, aes(baseMean,estimate))+
+      geom_point()
+
+tresults_2h %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_WT_2h.txt")
+
+de_Gat201up_2h <- dplyr::filter(tresults_2h, estimate > 1, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_Gat201up_2h
+
+readr::write_tsv(de_Gat201up_2h, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_2h.txt")
+readr::write_lines(de_Gat201up_2h$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_2h_genesonly.csv")
+
+de_Gat201down_2h <- dplyr::filter(tresults_2h, estimate < 1, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_Gat201down_2h
+
+readr::write_tsv(de_Gat201down_2h, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_2h.txt")
+readr::write_lines(de_Gat201down_2h$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_2h_genesonly.csv")
+
+plot_2h <- qplot(x = baseMean, y = estimate, data = tresults_2h, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "Gat201 mutants v WT at 2 hrs")
+plot_2h
+
+volcano_2h <- 
+  ggplot(data = tresults_2h, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_2h, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_2h, colour = Gat201down_colour) +
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70,80,90,100),
+                            limits = c(0,100), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "Gat201 mutants v WT at 2h")
+volcano_2h
+
+```
+
+```{r save volcano plot 2h}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_2h_volcano.png",
+       width = 5,height=5)
+```
+
+
+```{r volcano 2hsp gene label}
+volcano2hsp <- 
+  ggplot(data = tresults_2h, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_2h, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_2h, colour = Gat201down_colour) +
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_01551"), label="Gat201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_06762"), label="Gat204",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_063641"), label="Blp1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_00883"), label="Ecm2201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_05835"), label="Liv3",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_03012"), label="CQS1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_01681"), label="FCY2",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_06401"), label="Ric8",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_07470"), label="Pde2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_06241"), label="Cfo1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_02777"), label="Pho84",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_04755"), label="Bck1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_02357"), label="Mkk2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_04514"), label="Mpk1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_04969"), label="UGD1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_01626"), label="Ada2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_03024"), label="Rim15",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_2h, gene =="CNAG_04864"), label="Cir1",hjust = 1.1,vjust = -0.1, colour= "red")+
+         scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70),
+                            limits = c(0,70), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+             y = "-log10(p.value)",
+             title = "Gat201 mutants v WT at 2h")
+volcano2hsp
+
+```
+
+```{r save volcano plot 2hsp}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_2hsp_volcano.png",
+       width = 5,height=5)
+```
+
+
+```{r}
+jpeg(file= "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/MAPlot_dds2h.jpeg")
+MAplot_dds2h <- plotMA(results_2h, ylim=c(-7,7), alpha=.05)
+with(results_2h["CNAG_01551", ], {
+  points(baseMean, log2FoldChange, col="red", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "Gat201", cex =2 ,pos=2, col="red")
+})+
+ with(results_2h["CNAG_06568", ], {
+  points(baseMean, log2FoldChange, col="darkgreen", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "SKS1", cex =2 ,pos=4, col="darkgreen")
+}) +
+   with(results_2h["CNAG_01980", ], {
+  points(baseMean, log2FoldChange, col="magenta", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "HP", cex =2 ,pos=3, col="magenta")
+   })
+dev.off()
+
+```
+
+## Gat201 deletion (GAT201 = no) v WT (GAT201 = yes) 4h only
+
+Filter for 4h time points from samplesheet
+Select from counts table only counts with 'x'
+Set rownames to make format of table appropriate for DESeq: 'magrittr::set_rownames'
+
+```{r DESeq4h GAT201vWT}
+samplesheet_4h <- dplyr::filter(samplesheet, Time == "240")
+                  print(samplesheet_4h)
+
+counts_4h <-   dplyr::select(counts, samplesheet_4h$SampleID) %>%
+               magrittr::set_rownames(counts$Geneid)
+
+dds_4h <- DESeqDataSetFromMatrix(countData = counts_4h,
+                                 colData = samplesheet_4h,
+                                 design = ~ GAT201)%>%
+        DESeq()
+
+resultsNames(dds_4h)
+results_4h <- results(dds_4h, name="GAT201_No_vs_Yes")
+```
+
+### Tidy version of results_4h
+'tidy.DESeqResults' takes big object and just gives the data frame for results_4h
+
+
+```{r Tidy version of result DESeq4h WT v GAT201}
+tresults_4h <- biobroom::tidy.DESeqResults(results_4h)
+head(tresults_4h)
+```
+
+### Write full output to table for analysis with VolcaNoseR for results_4h
+minus_log10_pvalue need to calcultae this for volcanoser.
+This takes the work done in the script so far and puts it in a sensible format and exports it to a file:
+WT_Gat201_DEseq2_genes4h.txt (count analysis and sample sheet to get DE data)
+
+```{r tresults_4h mutate}
+tresults_4h %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_WT_4h.txt")
+```
+
+### Filter results 2x different, 5% FDR upregulated
+Select rows with estimated log2fold change >1 and -pvalue <0.05
+Arrange in descending row estimate, most DE genes at top
+New table, similar info to V, just ordered differently, entire table with all stats
+Took list of genes (de_GAt201up_4h$gene)write to new file. Can use this file  GO analysis
+
+```{r de_Gat201up_4h}
+de_Gat201up_4h <- dplyr::filter(tresults_4h, estimate > 1, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_Gat201up_4h
+
+readr::write_tsv(de_Gat201up_4h, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_4h.txt")
+readr::write_lines(de_Gat201up_4h$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_4h_genesonly.csv")
+                
+```
+### Gat201 deletion (GAT201 = no) v WT (GAT201 = yes) DOWN 4h only
+values negative since down regulated
+
+```{r de_Gat201down_4h}
+de_Gat201down_4h <- dplyr::filter(tresults_4h, estimate < 1, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_Gat201down_4h
+
+readr::write_tsv(de_Gat201down_4h, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_4h.txt")
+readr::write_lines(de_Gat201down_4h$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_4h_genesonly.csv")
+```
+
+### Plot log2fold-change (estimate) against baseMean 4h
+
+```{r plot_4h}
+plot_4h<- qplot(x = baseMean, y = estimate, data = tresults_4h, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "Gat201 mutants v WT at 4 hrs")
+plot_4h
+        
+```
+
+### Plot fold-change and p-value (volcano) at 4h
+this gives the axis only
+this lots all genes
+this plots up genes only inn colour, others in grey
+this plots down genes (will show up and down in diff colours)
+change y scale display to show certain p values only to see more
+out of bounds squish so can still see, will be squished at the top
+plot between 2e-7 and 2e7
+
+```{r volcano 4h}
+volcano_4h <- 
+  ggplot(data = tresults_4h, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_4h, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_4h, colour = Gat201down_colour) +
+          geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70,80,90,100),
+                            limits = c(0,100), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-6,6,2),
+                            limits = c(-7,7), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "Gat201 mutants v WT at 4h")
+volcano_4h
+
+```
+
+```{r}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_4h_volcano.png",
+       width = 5,height=5)
+```
+
+```{r volcano 4hsp gene label}
+volcano4hsp <- 
+  ggplot(data = tresults_4h, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_4h, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_4h, colour = Gat201down_colour) +
+   geom_text_repel(data = filter(tresults_4h, gene =="CNAG_01551"), label="Gat201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_06762"), label="Gat204",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_063641"), label="Blp1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_00883"), label="Ecm2201",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_05835"), label="Liv3",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_03012"), label="CQS1",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_01681"), label="FCY2",hjust = 1.1,vjust = -0.1, colour= "red")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_06401"), label="Ric8",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_07470"), label="Pde2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_06241"), label="Cfo1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_02777"), label="Pho84",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_04755"), label="Bck1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_02357"), label="Mkk2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_04514"), label="Mpk1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_04969"), label="UGD1",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_01626"), label="Ada2",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_03024"), label="Rim15",hjust = 1.1,vjust = -0.1, colour= "black")+
+    geom_text_repel(data = filter(tresults_4h, gene =="CNAG_04864"), label="Cir1",hjust = 1.1,vjust = -0.1, colour= "red")+
+         scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70,80,90,100),
+                            limits = c(0,100), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-5,5,1),
+                            limits = c(-5,5), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+             y = "-log10(p.value)",
+             title = "Gat201 mutants v WT at 4h")
+volcano4hsp
+
+```
+
+```{r}
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Gat201vWT_4hsp_volcano.png",
+       width = 5,height=5)
+```
+
+
+```{r}
+jpeg(file= "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/MAPlot_dds4h.jpeg")
+MAplot_dds4h <- plotMA(results_4h, ylim=c(-7,7), alpha=.05)
+with(results_4h["CNAG_01551", ], {
+  points(baseMean, log2FoldChange, col="red", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "Gat201", cex =2 ,pos=2, col="red")
+})+
+ with(results_4h["CNAG_06568", ], {
+  points(baseMean, log2FoldChange, col="darkgreen", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "SKS1", cex =2 ,pos=3, col="darkgreen")
+ })+
+   with(results_4h["CNAG_01980", ], {
+  points(baseMean, log2FoldChange, col="magenta", cex=2, lwd=2)
+  text(baseMean, log2FoldChange, "HP", cex =2 ,pos=3, col="magenta")
+   })
+dev.off()
+
+```
+
+## 0h v 30 mins, Gat201 mutants
+
+
+samplesheet_0_30 <- samplesheet %>% filter(Time == "0" | Time == "30") %>%
+                    filter(GAT201 == "Yes")
+                    print(samplesheet_0_30)
+                  
+
+
+counts_0_30 <-   dplyr::select(counts, samplesheet_0_30$SampleID) %>%
+                 magrittr::set_rownames(counts$Geneid)
+
+dds_0_30 <- DESeqDataSetFromMatrix(countData = counts_0_30,
+                                 colData = samplesheet_0_30,
+                                 design = ~ Time)%>%
+        DESeq()
+
+resultsNames(dds_0_30)
+results_0_30 <- results(dds_0_30, name="Time")
+plotMA(results_0_30, ylim=c(-2,2))
+
+tresults_0_30 <- biobroom::tidy.DESeqResults(results_0_30)
+head(tresults_0_30)
+
+tresults_0_30 %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30Gat201mut.txt")
+
+de_Gat201up_0_30 <- dplyr::filter(tresults_0_30, estimate > 0, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_Gat201up_0_30
+
+readr::write_tsv(de_Gat201up_0_30, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30Gat201mutup_padj0p05.txt")
+readr::write_lines(de_Gat201up_0_30$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30Gat201mutup_padj0p05_genesonly.txt")
+
+de_Gat201down_0_30 <- dplyr::filter(tresults_0_30, estimate < 0, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_Gat201down_0_30
+
+readr::write_tsv(de_Gat201down_0_30, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30Gat201mutdown_padj0p05.txt")
+readr::write_lines(de_Gat201down_0_30$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30Gat201mutdown_padj0p05h_genesonly.txt")
+
+plot_0_30<- qplot(x = baseMean, y = estimate, data = tresults_0_30, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "0h v 30min Gat201 mutants")
+plot_0_30
+
+volcano_0_30 <- 
+  ggplot(data = tresults_0_30, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_0_30, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_0_30, colour = Gat201down_colour) +
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-2,2,2),
+                            limits = c(-2,2), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "0h v 30m, Gat201 == yes")
+volcano_0_30
+
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30Gat201.png",
+       width = 5,height=5)
+
+
+
+## 0h v 2h, Gat201 mutants
+
+
+samplesheet0_2 <- samplesheet %>% filter(Time == "0" | Time == "120") %>%
+                    filter(GAT201 == "Yes")
+                    print(samplesheet0_2)
+                  
+
+
+counts0_2 <-   dplyr::select(counts, samplesheet0_2$SampleID) %>%
+                 magrittr::set_rownames(counts$Geneid)
+
+dds_0_2 <- DESeqDataSetFromMatrix(countData = counts0_2,
+                                 colData = samplesheet0_2,
+                                 design = ~ Time)%>%
+        DESeq()
+
+resultsNames(dds_0_2)
+results_0_2 <- results(dds_0_2, name="Time")
+plotMA(results_0_2, ylim=c(-2,2))
+
+tresults_0_2 <- biobroom::tidy.DESeqResults(results_0_2)
+head(tresults_0_2)
+
+tresults_0_2 %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2Gat201mut.txt")
+
+de_Gat201up_0_2 <- dplyr::filter(tresults_0_2, estimate > 0, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_Gat201up_0_2
+
+readr::write_tsv(de_Gat201up_0_2, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2Gat201mutup_padj0p05.txt")
+readr::write_lines(de_Gat201up_0_2$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2Gat201mutup_padj0p05_genesonly.txt")
+
+de_Gat201down_0_2 <- dplyr::filter(tresults_0_2, estimate < 0, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_Gat201down_0_2
+
+readr::write_tsv(de_Gat201down_0_2, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2Gat201mutdown_padj0p05.txt")
+readr::write_lines(de_Gat201down_0_2$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2Gat201mutdown_padj0p05h_genesonly.txt")
+
+plot_0_2<- qplot(x = baseMean, y = estimate, data = tresults_0_2, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "0h v 2h Gat201 mutants")
+plot_0_2
+
+volcano_0_2 <- 
+  ggplot(data = tresults_0_2, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_0_2, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_0_2, colour = Gat201down_colour) +
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-2,2,2),
+                            limits = c(-2,2), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "0h v 2h, Gat201 == Yes")
+volcano_0_2
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2Gat201.png",
+       width = 5,height=5)
+
+
+
+## 0h v 4h, Gat201 mutants
+
+samplesheet0_4 <- samplesheet %>% filter(Time == "0" | Time == "240") %>%
+                    filter(GAT201 == "Yes")
+                    print(samplesheet0_4)
+                  
+
+
+counts0_4 <-   dplyr::select(counts, samplesheet0_4$SampleID) %>%
+                 magrittr::set_rownames(counts$Geneid)
+
+dds_0_4 <- DESeqDataSetFromMatrix(countData = counts0_4,
+                                 colData = samplesheet0_4,
+                                 design = ~ Time)%>%
+        DESeq()
+
+resultsNames(dds_0_4)
+results_0_4 <- results(dds_0_4, name="Time")
+plotMA(results_0_4, ylim=c(-2,2))
+
+tresults_0_4 <- biobroom::tidy.DESeqResults(results_0_4)
+head(tresults_0_4)
+
+tresults_0_4 %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4Gat201mut.txt")
+
+de_Gat201up_0_4 <- dplyr::filter(tresults_0_4, estimate > 0, p.adjusted < 0.05) %>%
+                   dplyr::arrange(desc(estimate))
+de_Gat201up_0_4
+
+readr::write_tsv(de_Gat201up_0_4, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4Gat201mutup_padj0p05.txt")
+readr::write_lines(de_Gat201up_0_4$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4Gat201mutup_padj0p05_genesonly.txt")
+
+de_Gat201down_0_4 <- dplyr::filter(tresults_0_4, estimate < 0, p.adjusted < 0.05) %>%
+                     dplyr::arrange(estimate)
+de_Gat201down_0_4
+
+readr::write_tsv(de_Gat201down_0_4, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4Gat201mutdown_padj0p05.txt")
+readr::write_lines(de_Gat201down_0_4$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4Gat201mutdown_padj0p05h_genesonly.txt")
+
+plot_0_4<- qplot(x = baseMean, y = estimate, data = tresults_0_4, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 10000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "0h v 4h Gat201 mutants")
+plot_0_4
+
+volcano_0_4 <- 
+  ggplot(data = tresults_0_4, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_Gat201up_0_4, colour = Gat201up_colour) +
+         geom_point(data = de_Gat201down_0_4, colour = Gat201down_colour) +
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-2,2,2),
+                            limits = c(-2,2), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "0h v 4h, Gat201 == Yes")
+volcano_0_4
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4Gat201.png",
+       width = 5,height=5)
+
+
+## 0h v 30 mins, WT
+
+
+samplesheet_0_30n <- samplesheet %>% filter(Time == "0" | Time == "30") %>%
+                    filter(GAT201 == "No")
+                    print(samplesheet_0_30n)
+                  
+
+
+counts_0_30n <-   dplyr::select(counts, samplesheet_0_30n$SampleID) %>%
+                 magrittr::set_rownames(counts$Geneid)
+
+dds_0_30n <- DESeqDataSetFromMatrix(countData = counts_0_30n,
+                                 colData = samplesheet_0_30n,
+                                 design = ~ Time)%>%
+        DESeq()
+
+resultsNames(dds_0_30n)
+results_0_30n <- results(dds_0_30n, name="Time")
+plotMA(results_0_30n, ylim=c(-2,2))
+
+tresults_0_30n <- biobroom::tidy.DESeqResults(results_0_30n)
+head(tresults_0_30n)
+
+tresults_0_30n %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30nWT.txt")
+
+de_WTup_0_30n <- dplyr::filter(tresults_0_30n, estimate > 0, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_WTup_0_30n
+
+readr::write_tsv(de_WTup_0_30n, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30nWTup_padj0p05.txt")
+readr::write_lines(de_WTup_0_30n$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30nWTup_padj0p05_genesonly.txt")
+
+de_WTdown_0_30n <- dplyr::filter(tresults_0_30n, estimate < 0, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_WTdown_0_30n
+
+readr::write_tsv(de_WTdown_0_30n, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30nWTdown_padj0p05.txt")
+readr::write_lines(de_WTdown_0_30n$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30nWTdown_padj0p05h_genesonly.txt")
+
+plot_0_30n<- qplot(x = baseMean, y = estimate, data = tresults_0_30n, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "0h v 30min WT")
+plot_0_30n
+
+volcano_0_30n <- 
+  ggplot(data = tresults_0_30n, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_WTup_0_30n, colour = WTup_colour) +
+         geom_point(data = de_WTdown_0_30n, colour = WTdown_colour) +
+         geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-2,2,2),
+                            limits = c(-2,2), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "0h v 30m, Gat201 == no")
+volcano_0_30n
+
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v30nWT.png",
+       width = 5,height=5)
+
+
+
+## 0h v 2h, WT
+
+
+samplesheet_0_2n <- samplesheet %>% filter(Time == "0" | Time == "120") %>%
+                    filter(GAT201 == "No")
+                    print(samplesheet_0_2n)
+                  
+
+
+counts_0_2n <-   dplyr::select(counts, samplesheet_0_2n$SampleID) %>%
+                 magrittr::set_rownames(counts$Geneid)
+
+dds_0_2n <- DESeqDataSetFromMatrix(countData = counts_0_2n,
+                                 colData = samplesheet_0_2n,
+                                 design = ~ Time)%>%
+        DESeq()
+
+resultsNames(dds_0_2n)
+results_0_2n <- results(dds_0_2n, name="Time")
+plotMA(results_0_2n, ylim=c(-2,2))
+
+tresults_0_2n <- biobroom::tidy.DESeqResults(results_0_2n)
+head(tresults_0_2n)
+
+tresults_0_2n %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2nWT.txt")
+
+de_WTup_0_2n <- dplyr::filter(tresults_0_2n, estimate > 0, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_WTup_0_2n
+
+readr::write_tsv(de_WTup_0_2n, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2nWTup_padj0p05.txt")
+readr::write_lines(de_WTup_0_2n$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2nWTup_padj0p05_genesonly.txt")
+
+de_WTdown_0_2n <- dplyr::filter(tresults_0_2n, estimate < 0, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_WTdown_0_2n
+
+readr::write_tsv(de_WTdown_0_2n, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2nWTdown_padj0p05.txt")
+readr::write_lines(de_WTdown_0_2n$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2nWTdown_padj0p05h_genesonly.txt")
+
+plot_0_2n<- qplot(x = baseMean, y = estimate, data = tresults_0_2n, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "0h v 2h WT")
+plot_0_2n
+
+volcano_0_2n <- 
+  ggplot(data = tresults_0_2n, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_WTup_0_2n, colour = WTup_colour) +
+         geom_point(data = de_WTdown_0_2n, colour = WTdown_colour) +
+          geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-2,2,2),
+                            limits = c(-2,2), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "0h v 2h, Gat201 == no")
+volcano_0_2n
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v2nWT.png",
+       width = 5,height=5)
+
+
+## 0h v 4h, WT
+
+
+samplesheet_0_4n <- samplesheet %>% filter(Time == "0" | Time == "240") %>%
+                    filter(GAT201 == "No")
+                    print(samplesheet_0_4n)
+                  
+
+
+counts_0_4n <-   dplyr::select(counts, samplesheet_0_4n$SampleID) %>%
+                 magrittr::set_rownames(counts$Geneid)
+
+dds_0_4n <- DESeqDataSetFromMatrix(countData = counts_0_4n,
+                                 colData = samplesheet_0_4n,
+                                 design = ~ Time)%>%
+        DESeq()
+
+resultsNames(dds_0_4n)
+results_0_4n <- results(dds_0_4n, name="Time")
+plotMA(results_0_4n, ylim=c(-2,2))
+
+tresults_0_4n <- biobroom::tidy.DESeqResults(results_0_4n)
+head(tresults_0_4n)
+
+tresults_0_4n %>%  
+dplyr::mutate(minus_log10_pvalue = -log10(p.value)) %>%
+readr::write_tsv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4nWT.txt")
+
+de_WTup_0_4n <- dplyr::filter(tresults_0_4n, estimate > 0, p.adjusted < 0.05) %>%
+              dplyr::arrange(desc(estimate))
+de_WTup_0_4n
+
+readr::write_tsv(de_WTup_0_4n, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4nWTup_padj0p05.txt")
+readr::write_lines(de_WTup_0_4n$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4nWTup_padj0p05_genesonly.txt")
+
+de_WTdown_0_4n <- dplyr::filter(tresults_0_4n, estimate < 0, p.adjusted < 0.05) %>%
+                dplyr::arrange(estimate)
+de_WTdown_0_4n
+
+readr::write_tsv(de_WTdown_0_4n, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4nWTdown_padj0p05.txt")
+readr::write_lines(de_WTdown_0_4n$gene, "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4nWTdown_padj0p05h_genesonly.txt")
+
+plot_0_4n<- qplot(x = baseMean, y = estimate, data = tresults_0_4n, geom = "point")+
+               geom_text(aes(label=ifelse(baseMean> 20000, (gene),'')),hjust=0,vjust=0, cex = 1.5, jitter = 0.5)+
+               labs(x ="Mean", y= "log2fold change", title = "0h v 4h WT")
+plot_0_4n
+
+volcano_0_4n <- 
+  ggplot(data = tresults_0_4n, aes(x=estimate,y=-log10(p.value))) +
+         geom_point(colour = "grey50",size = 0.5) +
+         geom_point(data = de_WTup_0_4n, colour = WTup_colour) +
+         geom_point(data = de_WTdown_0_4n, colour = WTdown_colour) +
+           geom_text_repel(aes(label=ifelse(estimate < -1 & -log10(p.value)> 1.3, (gene),'')), size= 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         geom_text_repel(aes(label=ifelse(estimate > 1 & -log10(p.value)> 1.3, (gene),'')), size = 2, max.overlaps = getOption("ggrepel.max.overlaps", default = 15))+
+         scale_y_continuous(breaks = c(0,5,10,15,20),
+                            limits = c(0,20), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        scale_x_continuous(breaks = seq(-2,2,2),
+                            limits = c(-2,2), 
+                            expand = c(0.01,0.01), 
+                            oob = scales::squish) +
+        labs(x = "log2-fold change",
+        title = "0h v 4h, Gat201 == no")
+volcano_0_4n
+
+
+ggsave("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/0v4nWT.png",
+       width = 5,height=5)
+
+
+
+# Gene Annotation and Match up-regulated genes to annotation file
+```{r prepare GeneList}
+GeneDescription <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq/gene_name_product.csv")
+GeneList <- select(GeneDescription, -X1)
+head(GeneList)
+```
+
+```{r prepare gene list 0hDOWN}
+Gat201down_genes_0h <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_0h_genesonly.csv")
+head(Gat201down_genes_0h)
+
+Gat201_0hDOWN<- dplyr::inner_join(Gat201down_genes_0h, GeneList)
+head(Gat201_0hDOWN)
+
+write.csv(Gat201_0hDOWN, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_0hDOWN.csv")
+summary(Gat201_0hDOWN)
+
+```
+
+```{r prepare gene list 0hUP}
+Gat201up_genes_0h <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_0h_genesonly.csv")
+head(Gat201up_genes_0h)
+
+Gat201_0hUP<- dplyr::inner_join(Gat201up_genes_0h, GeneList)
+head(Gat201_0hUP)
+
+write.csv(Gat201_0hUP, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_0hUP.csv")
+summary(Gat201_0hUP)
+
+```
+
+```{r prepare gene list 30mDOWN}
+Gat201down_genes_30m <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_30m_genesonly.csv")
+head(Gat201down_genes_30m)
+
+Gat201_30m_DOWN<- dplyr::inner_join(Gat201down_genes_30m, GeneList)
+head(Gat201_30m_DOWN)
+
+write.csv(Gat201_30m_DOWN, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_30mDOWN.csv")
+summary(Gat201_30m_DOWN)
+
+```
+
+```{r prepare gene list 30mUP}
+Gat201up_genes_30m <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_30m_genesonly.csv")
+head(Gat201up_genes_30m)
+
+Gat201_30mUP<- dplyr::inner_join(Gat201up_genes_30m, GeneList)
+head(Gat201_30mUP)
+
+write.csv(Gat201_30mUP, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_30mUP.csv")
+summary(Gat201_30mUP)
+
+```
+
+```{r prepare gene list 2hDOWN}
+Gat201down_gene_2h <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_2h_genesonly.csv")
+head(Gat201down_gene_2h)
+
+Gat201_2hDOWN<- dplyr::inner_join(Gat201down_gene_2h, GeneList)
+head(Gat201_2hDOWN)
+
+write.csv(Gat201_2hDOWN, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_2hDOWN.csv")
+summary(Gat201_2hDOWN)
+
+```
+
+```{r prepare gene list 2hUP}
+Gat201up_genes_2h <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_2h_genesonly.csv")
+head(Gat201up_genes_2h)
+
+Gat201_2hUP<- dplyr::inner_join(Gat201up_genes_2h, GeneList)
+head(Gat201_2hUP)
+
+write.csv(Gat201_2hUP, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_2hUP.csv")
+summary(Gat201_2hUP)
+
+```
+
+```{r prepare gene list 4hDOWN}
+Gat201down_genes_4h <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201down_padj05_4h_genesonly.csv")
+head(Gat201down_genes_4h)
+
+Gat2014h_DOWN<- dplyr::inner_join(Gat201down_genes_4h, GeneList)
+head(Gat2014h_DOWN)
+
+write.csv(Gat2014h_DOWN, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_4hDOWN.csv")
+summary(Gat2014h_DOWN)
+
+```
+
+```{r prepare gene list 4hUP}
+Gat201up_genes_4h <- readr::read_csv("~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201up_padj05_4h_genesonly.csv")
+head(Gat201up_genes_4h)
+
+Gat2014hUP<- dplyr::inner_join(Gat201up_genes_4h, GeneList)
+head(Gat2014hUP)
+
+write.csv(Gat2014hUP, file = "~/Documents/GitHub/CryptoGat201RNASeq_draft/results_deseq_2/Genelist/Gat201_4hUP.csv")
+summary(Gat2014hUP)
+
+```
+
+# GO visualisation
+
+```{r R0down}
+
+R_0_down <- readr::read_csv("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/0downall.csv")
+head(R_0_down)
+
+ggplot(R_0_down, aes(Frequency, Name, fill = Name))+
+  theme(legend.position ="none")+
+geom_bar(stat = "identity")+
+ 
+  labs(title = "GO: 0 Hours Down",
+       x = "Frequency", y = "")
+ggsave("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/R_0down.png",
+       width = 6,height=5)
+
+ 
+
+```
+
+```{r R30up}
+
+R_30_up <- readr::read_csv("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/30upall.csv")
+head(R_30_up)
+
+ggplot(R_30_up, aes(Frequency, Name, fill = Name))+
+  theme(legend.position ="none")+
+geom_bar(stat = "identity")+
+ 
+  labs(title = "GO: 30 Min Up",
+       x = "Frequency", y = "")
+ggsave("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/R_30up.png",
+       width = 6,height=5)
+
+ 
+
+```
+
+```{r R2down}
+
+R_2_down <- readr::read_csv("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/2downall.csv")
+head(R_2_down)
+
+ggplot(R_2_down, aes(Frequency, Name, fill = Name))+
+  theme(legend.position ="none")+
+geom_bar(stat = "identity", width = 0.3)+
+ 
+  labs(title = "GO: 2 Hours Down",
+       x = "Frequency", y = "")
+ggsave("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/R_2down.png",
+       width = 6,height=5)
+
+ 
+
+```
+
+```{r R2dup}
+
+R_2_Up <- readr::read_csv("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/2upall.csv")
+head(R_2_Up)
+
+ggplot(R_2_Up, aes(Frequency, Name, fill = Name))+
+  theme(legend.position ="none")+
+geom_bar(stat = "identity")+
+ 
+  labs(title = "GO: 2 Hours Up",
+       x = "Frequency", y = "")
+ggsave("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/R_2up.png",
+       width = 6,height=5)
+
+ 
+
+```
+ 
+```{r R4down}
+
+R_4_down <- readr::read_csv("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/4downall.csv")
+head(R_4_down)
+
+ggplot(R_4_down, aes(Frequency, Name, fill = Name))+
+  theme(legend.position ="none")+
+geom_bar(stat = "identity", width = 0.5)+
+ 
+  labs(title = "GO: 4 Hours Down",
+       x = "Frequency", y = "")
+ggsave("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/R_4down.png",
+       width = 6,height=5)
+
+```
+ 
+ 
+```{r R4up}
+
+R_4_Up <- readr::read_csv("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/4upall.csv")
+head(R_4_Up)
+
+ggplot(R_4_Up, aes(Frequency, Name, fill = Name))+
+  theme(legend.position ="none")+
+geom_bar(stat = "identity")+
+ 
+  labs(title = "GO: 4 Hours Up",
+       x = "Frequency", y = "")
+ggsave("~/Documents/Edward Wallace/Lab based work/RNA Seq/Wake up 3/GOanalysis_2fold/R_4up.png",
+       width = 6,height=5)
+
+``` 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+

@@ -41,3 +41,13 @@ nextflow run src/quantseqfwd.nf -with-dag flowchart.png -with-report nextflow_re
 
 The options `-with-dag` and `-with-report` are just to tell you a little more about the output, they are not strictly needed in order to run.
 
+# Output files
+
+results_counts: contains the analysis from the count data including a clustered heatmap, dendogram, TPM plots, normalized clustered heatmap, gene summary table, PCA plots and plot mean TPMs.
+
+results_deseq: contains rlog transformation, sample distances, heatmap using rlog transformed data - for all samples, o hrs, 30 mins, 2 hrs and 4 hrs - ,PCA analysis - ohrs, 30 min, 2 hrs and 4 hrs -, DEG analysis, plotting individula genes, MA plots using rlog, Look at top expressed genes at all time points and create heatmaps for each, create Gene description file from GFF3 file.
+
+results_deseq_2: DEG analysis adapting code from Dian's analysis to my data set and putting it into .Rmd format, MA plots, Volcano plots for differentially expresed genes and volcano plots for GAT201 regulated genes, produce gene lists for differentially expressed genes at each time point of the analysis.
+
+.Rmd files: Contains files produced from R analysis and html files.
+
